@@ -1,0 +1,68 @@
+name: Add label
+on:
+  pull_request:
+    types:
+      - opened
+
+  issues:
+    types:
+      - opened
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: ✨ feature label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'feature:') || startsWith(env.ISSUE_TITLE, 'feature:') }}
+        with:
+          labels: ✨ feature
+
+      - name: ✅ test label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'test:') || startsWith(env.ISSUE_TITLE, 'test:') }}
+        with:
+          labels: ✅ test
+
+      - name: 🐞 bug
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'bug:') || startsWith(env.ISSUE_TITLE, 'bug:') }}
+        with:
+          labels: 🐞 bug
+
+      - name: 🧹 chore
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'chore:') || startsWith(env.ISSUE_TITLE, 'chore:') }}
+        with:
+          labels: 🧹 chore
+
+      - name: ♻️ refactor
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'refactor:') || startsWith(env.ISSUE_TITLE, 'refactor:') }}
+        with:
+          labels: ♻️ refactor
+
+      - name: 📄️ docs
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'docs:') || startsWith(env.ISSUE_TITLE, 'docs:') }}
+        with:
+          labels: 📄️ docs
+
+      - name: 🔨️setting
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ startsWith(env.PR_TITLE, 'setting:') || startsWith(env.ISSUE_TITLE, 'setting:') }}
+        with:
+          labels: 🔨️setting
