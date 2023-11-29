@@ -19,11 +19,11 @@ jobs:
   triage:
     runs-on: ubuntu-latest
 
-    steps:
-      - env:
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      ISSUE_TITLE: ${{ github.event.issue.title }}
 
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
