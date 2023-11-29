@@ -3,12 +3,10 @@ on:
   pull_request:
     types:
       - opened
-      - edited
 
   issues:
     types:
       - opened
-      - reopened
 
 permissions:
   contents: read
