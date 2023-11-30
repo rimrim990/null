@@ -4,6 +4,7 @@ about: 작업 사항을 기술해주세요
 title: ''
 labels: feature
 assignees: rimrim990
+projects: ["undefined"]
 
 ---
 
