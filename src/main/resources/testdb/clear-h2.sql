@@ -1,8 +1,8 @@
-set foreign_key_checks=0;
+set referential_integrity false;
+truncate table document;
+truncate table retrospect;
+truncate table stage;
+truncate table job;
+truncate table company;
 
-select concat('truncate table ',  table_name, ':')
-from information_schema.TABLES
-where TABLE_SCHEMA = 'db_name'
-and TABLE_TYPE = 'base table';
-
-set foreign_key_checks=1
+set referential_integrity true;

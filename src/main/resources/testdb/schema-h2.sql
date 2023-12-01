@@ -7,7 +7,7 @@ create table if not exists company
     created_at       timestamp    not null,
     last_modified_at timestamp    not null,
     primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists document
 (
@@ -18,7 +18,7 @@ create table if not exists document
     created_at       timestamp    not null,
     last_modified_at timestamp    not null,
     primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists job
 (
@@ -28,7 +28,7 @@ create table if not exists job
     created_at       timestamp    not null,
     last_modified_at timestamp    not null,
     primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists retrospect
 (
@@ -41,7 +41,7 @@ create table if not exists retrospect
     created_at       timestamp    not null,
     last_modified_at timestamp    not null,
     primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists stage
 (
@@ -52,13 +52,13 @@ create table if not exists stage
     created_at       timestamp    not null,
     last_modified_at timestamp    not null,
     primary key (id)
-) engine = InnoDB;
+);
 
 alter table document
-    add constraint fk_job foreign key (job_id) references job (id);
+    add foreign key (job_id) references job (id);
 
 alter table job
-    add constraint fk_company foreign key (company_id) references company (id);
+    add foreign key (company_id) references company (id);
 
 alter table stage
-    add constraint fk_job foreign key (job_id) references job (id);
+    add foreign key (job_id) references job (id);
