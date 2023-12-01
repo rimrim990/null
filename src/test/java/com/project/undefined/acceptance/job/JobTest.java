@@ -29,6 +29,6 @@ public class JobTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         List<JobResponse> jobs = RestAssuredUtils.extractAsList(response, JobResponse.class);
-        assertThat(jobs).hasSize(1);
+        assertThat(jobs).hasSize(3);
     }
 }
