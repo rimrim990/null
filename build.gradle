@@ -8,11 +8,6 @@ plugins {
 group = 'com.project'
 version = '0.0.1-SNAPSHOT'
 
-test {
-    useJUnitPlatform()
-    finalizedBy 'jacocoTestReport'
-}
-
 jacoco {
     toolVersion = '0.8.11'
 }
@@ -91,4 +86,8 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'io.rest-assured:rest-assured'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
 }
