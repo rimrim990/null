@@ -24,8 +24,9 @@ public class JobController {
 
     @PostMapping("/")
     public ResponseEntity<Void> create(@RequestBody final CreateJobRequest request) {
+        final JobResponse jobResponse = jobService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-            .location(URI.create("/1"))
+            .location(URI.create("/jobs/" + jobResponse.getId()))
             .build();
     }
 

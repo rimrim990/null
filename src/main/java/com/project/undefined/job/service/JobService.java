@@ -1,6 +1,9 @@
 package com.project.undefined.job.service;
 
 import com.project.undefined.common.exception.JobException;
+import com.project.undefined.company.entity.Company;
+import com.project.undefined.company.repository.CompanyRepository;
+import com.project.undefined.job.dto.request.CreateJobRequest;
 import com.project.undefined.job.dto.response.JobResponse;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.repository.JobRepository;
@@ -13,6 +16,16 @@ import org.springframework.stereotype.Service;
 public class JobService {
 
     private final JobRepository jobRepository;
+    private final CompanyRepository companyRepository;
+
+    public JobResponse create(final CreateJobRequest request) {
+        final Company company = companyRepository.findById(request.getCompanyId())
+            .orElseThrow();
+
+        final Job job = Job.of(company, request.getPosition());
+        jobRepository.save(job);
+        return JobResponse.from(job);
+    }
 
     public List<JobResponse> getAll() {
         final List<Job> jobs = jobRepository.findAll();
