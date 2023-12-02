@@ -1,5 +1,6 @@
 package com.project.undefined.job.service;
 
+import com.project.undefined.common.exception.JobException;
 import com.project.undefined.job.dto.response.JobResponse;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.repository.JobRepository;
@@ -14,9 +15,15 @@ public class JobService {
     private final JobRepository jobRepository;
 
     public List<JobResponse> getAll() {
-        List<Job> jobs = jobRepository.findAll();
+        final List<Job> jobs = jobRepository.findAll();
         return jobs.stream()
             .map(JobResponse::from)
             .toList();
+    }
+
+    public JobResponse get(final Long id) {
+        final Job job = jobRepository.findById(id)
+            .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
+        return JobResponse.from(job);
     }
 }

@@ -22,7 +22,7 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public JobResponse get(@PathVariable final String id)  {
-        return new JobResponse(1L, "test", "test", List.of());
+    public JobResponse get(@PathVariable final Long id)  {
+        return jobService.get(id);
     }
 }
