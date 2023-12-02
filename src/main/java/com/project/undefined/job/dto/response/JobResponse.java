@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class JobResponse {
 
-    private Long jobId;
+    private Long id;
     private String company;
     private String position;
     private List<String> stages;

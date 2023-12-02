@@ -12,6 +12,11 @@ public class RestAssuredUtils {
             .getList(".", type);
     }
 
+    public static <T> T extract(final ExtractableResponse<Response> response, final Class<T> type) {
+        return response.body()
+            .as(type);
+    }
+
     private  RestAssuredUtils() {
     }
 }

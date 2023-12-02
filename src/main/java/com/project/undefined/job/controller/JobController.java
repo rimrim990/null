@@ -5,6 +5,7 @@ import com.project.undefined.job.service.JobService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,5 +19,10 @@ public class JobController {
     @GetMapping("/")
     public List<JobResponse> getAll() {
         return jobService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public JobResponse get(@PathVariable final String id)  {
+        return new JobResponse(1L, "test", "test", List.of());
     }
 }
