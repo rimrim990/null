@@ -28,7 +28,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("등록된 모든 Job 목록을 조회한다.")
     void getAll_returnJobList() {
         // when
-        ExtractableResponse<Response> response = given().log().all()
+        final ExtractableResponse<Response> response = given().log().all()
             .when()
             .get("/jobs/")
             .then().log().all()
@@ -36,7 +36,7 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        List<JobResponse> jobs = RestAssuredUtils.extractAsList(response, JobResponse.class);
+        final List<JobResponse> jobs = RestAssuredUtils.extractAsList(response, JobResponse.class);
         assertThat(jobs).hasSize(3);
     }
 
@@ -47,7 +47,7 @@ public class JobTest extends AcceptanceTest {
         final Long jobId = getJobIds(1).get(0);
 
         // when
-        ExtractableResponse<Response> response = given().log().all()
+        final ExtractableResponse<Response> response = given().log().all()
             .when()
             .get("/jobs/" + jobId)
             .then().log().all()
@@ -55,7 +55,7 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        JobResponse job = RestAssuredUtils.extract(response, JobResponse.class);
+        final JobResponse job = RestAssuredUtils.extract(response, JobResponse.class);
         assertThat(job).hasFieldOrPropertyWithValue("id", jobId);
     }
 
