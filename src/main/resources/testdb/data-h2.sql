@@ -1,9 +1,9 @@
 insert into company(name, region, series, created_at, last_modified_at)
-    values('Google', 'Seoul', 'A', now(), now());
+    values('Google', 'SEOUL', 'A', now(), now());
 insert into company(name, region, series, created_at, last_modified_at)
     values('Netflix', 'ETC', 'IPO', now(), now());
 insert into company(name, region, series, created_at, last_modified_at)
-    values('Amazon', 'Seoul', 'D', now(), now());
+    values('Amazon', 'SEOUL', 'D', now(), now());
 
 insert into job(company_id, position, created_at, last_modified_at)
     select id, '백엔드', now(), now() from company;
