@@ -14,7 +14,6 @@ import org.springframework.test.context.jdbc.SqlGroup;
 @TestContext
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SqlGroup({
-    @Sql(scripts = {"classpath:/testdb/schema-h2.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_CLASS),
     @Sql(scripts = {"classpath:/testdb/data-h2.sql"}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD),
     @Sql(scripts = {"classpath:/testdb/clear-h2.sql"}, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
 })
