@@ -1,6 +1,6 @@
 package com.project.undefined.common.exception;
 
-public class JobException extends RuntimeException {
+public class JobException extends BaseException {
 
     public JobException(String message) {
         super(message);

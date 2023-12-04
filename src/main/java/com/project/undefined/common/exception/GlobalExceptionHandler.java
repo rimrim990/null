@@ -9,15 +9,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CompanyException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyException(final CompanyException exception) {
-        final ErrorResponse response = ErrorResponse.from(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(response);
-    }
-
-    @ExceptionHandler(JobException.class)
-    public ResponseEntity<ErrorResponse> handleJobException(final JobException exception) {
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponse> handleCompanyException(final BaseException exception) {
         final ErrorResponse response = ErrorResponse.from(exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(response);
