@@ -33,7 +33,7 @@ public class JobTest extends AcceptanceTest {
 
     @Test
     @DisplayName("등록된 모든 Job 목록을 조회한다.")
-    void getAll_returnJobList() {
+    void getAll_ok() {
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
@@ -49,7 +49,7 @@ public class JobTest extends AcceptanceTest {
 
     @Test
     @DisplayName("id와 일치한 Job의 세부 정보를 조회한다.")
-    void get_returnJob() {
+    void get_invalidJobId_badRequest() {
         // given
         final Long jobId = getJobIds(1).get(0);
 
@@ -67,8 +67,25 @@ public class JobTest extends AcceptanceTest {
     }
 
     @Test
+    @DisplayName("id와 일치한 Job이 없으면 401 상태를 반환한다.")
+    void get_ok() {
+        // given
+        final Long notExistJobId = getJobIds(1).get(0);
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .get("/jobs/" + notExistJobId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @Test
     @DisplayName("Job을 생성한다.")
-    void create() {
+    void create_created() {
         // given
         final Long companyId = getCompanyIds(1).get(0);
         final CreateJobRequest request = new CreateJobRequest(companyId, "backend");
@@ -87,6 +104,26 @@ public class JobTest extends AcceptanceTest {
         final String location = response.header("Location");
         final String jobId = location.split("/jobs/")[1];
         assertThat(jobId).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("companyId가 유효하지 않으면 401 상태를 반환한다")
+    void create_invalidCompanyId_badRequest() {
+        // given
+        final Long notExsitCompanyId = 1_000_000L;
+        final CreateJobRequest request = new CreateJobRequest(notExsitCompanyId, "backend");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .post("/jobs/")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private List<Long> getJobIds(final int size) {
