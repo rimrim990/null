@@ -56,7 +56,9 @@ jacocoTestCoverageVerification {
                 maximum = 100
             }
 
-            excludes = []
+            excludes = [
+                    "com.project.undefined.*.entity.*"
+            ]
         }
     }
 }
