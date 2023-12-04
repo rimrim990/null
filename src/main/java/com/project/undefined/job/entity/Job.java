@@ -10,10 +10,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Job extends BaseEntity {
 
     @Id
@@ -26,4 +31,8 @@ public class Job extends BaseEntity {
 
     @Column(nullable = false)
     private String position;
+
+    public static Job of(final Company company, final String position) {
+        return new Job(null, company, position);
+    }
 }

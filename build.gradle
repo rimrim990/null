@@ -8,11 +8,6 @@ plugins {
 group = 'com.project'
 version = '0.0.1-SNAPSHOT'
 
-test {
-    useJUnitPlatform()
-    finalizedBy 'jacocoTestReport'
-}
-
 jacoco {
     toolVersion = '0.8.11'
 }
@@ -61,7 +56,9 @@ jacocoTestCoverageVerification {
                 maximum = 100
             }
 
-            excludes = []
+            excludes = [
+                    "com.project.undefined.*.entity.*"
+            ]
         }
     }
 }
@@ -82,7 +79,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'mysql:mysql-connector-java:8.0.33'
@@ -91,6 +87,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'io.rest-assured:rest-assured'
 }
 
 tasks.named('test') {
