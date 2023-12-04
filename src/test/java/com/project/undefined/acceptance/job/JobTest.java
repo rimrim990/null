@@ -68,7 +68,7 @@ public class JobTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("id와 일치한 Job이 없으면 401 상태를 반환한다.")
+    @DisplayName("id와 일치한 Job이 없으면 400 상태를 반환한다.")
     void get_ok() {
         // given
         final Long notExistJobId = 1_000_000L;
@@ -110,7 +110,7 @@ public class JobTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("companyId가 유효하지 않으면 401 상태를 반환한다")
+    @DisplayName("companyId가 유효하지 않으면 400 상태를 반환한다")
     void create_invalidCompanyId_badRequest() {
         // given
         final Long notExsitCompanyId = 1_000_000L;
