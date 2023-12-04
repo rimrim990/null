@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
+import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.company.entity.Company;
 import com.project.undefined.company.repository.CompanyRepository;
 import com.project.undefined.job.dto.request.CreateJobRequest;
@@ -70,7 +71,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("id와 일치한 Job이 없으면 401 상태를 반환한다.")
     void get_ok() {
         // given
-        final Long notExistJobId = getJobIds(1).get(0);
+        final Long notExistJobId = 1_000_000L;
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -81,6 +82,8 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("일치하는 Job이 존재하지 않습니다.");
     }
 
     @Test
@@ -124,6 +127,8 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("일치하는 Company가 존재하지 않습니다.");
     }
 
     private List<Long> getJobIds(final int size) {
