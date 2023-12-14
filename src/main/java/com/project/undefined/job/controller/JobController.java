@@ -3,6 +3,7 @@ package com.project.undefined.job.controller;
 import com.project.undefined.job.dto.request.CreateJobRequest;
 import com.project.undefined.job.dto.response.JobResponse;
 import com.project.undefined.job.service.JobService;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class JobController {
     private final JobService jobService;
 
     @PostMapping("/")
-    public ResponseEntity<Void> create(@RequestBody final CreateJobRequest request) {
+    public ResponseEntity<Void> create(@Valid @RequestBody final CreateJobRequest request) {
         final JobResponse jobResponse = jobService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
             .location(URI.create("/jobs/" + jobResponse.getId()))

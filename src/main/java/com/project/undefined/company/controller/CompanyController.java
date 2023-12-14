@@ -3,6 +3,7 @@ package com.project.undefined.company.controller;
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
 import com.project.undefined.company.dto.response.CompanyResponse;
 import com.project.undefined.company.service.CompanyService;
+import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping("/")
-    public ResponseEntity<Void> create(@RequestBody final CreateCompanyRequest request) {
+    public ResponseEntity<Void> create(@Valid @RequestBody final CreateCompanyRequest request) {
         final CompanyResponse response = companyService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/companies/" + response.getId()))
