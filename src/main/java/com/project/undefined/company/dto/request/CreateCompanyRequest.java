@@ -1,7 +1,7 @@
 package com.project.undefined.company.dto.request;
 
-import com.project.undefined.company.entity.Company.Region;
-import com.project.undefined.company.entity.Company.Series;
+import com.project.undefined.company.entity.Region;
+import com.project.undefined.company.entity.Series;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
