@@ -31,6 +31,6 @@ public class CompanyController {
 
     @GetMapping("/")
     public List<CompanyResponse> getAll() {
-        return List.of();
+        return companyService.getAll();
     }
 }
