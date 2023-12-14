@@ -1,17 +1,16 @@
-package com.project.undefined.acceptance.job;
+package com.project.undefined.acceptance.company;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
+import com.project.undefined.company.dto.request.CreateCompanyRequest;
 import com.project.undefined.company.entity.Company;
 import com.project.undefined.company.repository.CompanyRepository;
-import com.project.undefined.job.dto.request.CreateJobRequest;
-import com.project.undefined.job.dto.response.JobResponse;
-import com.project.undefined.job.entity.Job;
-import com.project.undefined.job.repository.JobRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -24,111 +23,47 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("Job API 인수 테스트")
-public class JobTest extends AcceptanceTest {
+@DisplayName("Company API 인수 테스트")
+public class CompanyTest extends AcceptanceTest {
 
     @Autowired
-    JobRepository jobRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("등록된 모든 Job 목록을 조회한다.")
+    @DisplayName("등록된 모든 Company 목록을 조회한다")
     void getAll_ok() {
         // given
-        final List<Long> jobIds = getJobIds(Pageable.unpaged());
+        final List<Long> companyIds = getCompanyIds(Pageable.unpaged());
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .get("/jobs/")
+            .get("/companies/")
             .then().log().all()
             .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        final List<Long> extractedIds = RestAssuredUtils.extractAsList(response, JobResponse.class)
+        final List<Long> extractedIds = RestAssuredUtils.extractAsList(response, Company.class)
             .stream()
-            .map(JobResponse::getId)
+            .map(Company::getId)
             .toList();
-        assertThat(extractedIds).containsExactlyElementsOf(jobIds);
+        assertThat(extractedIds).containsExactlyElementsOf(companyIds);
     }
 
     @Test
-    @DisplayName("id와 일치한 Job의 세부 정보를 조회한다.")
-    void get_invalidJobId_badRequest() {
+    @DisplayName("유효하지 않은 id로 Company를 조회하면 400 상태를 반환한다.")
+    void get_invalidId_badRequest() {
         // given
-        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
+        long invalidCompanyId = 10_000_000L;
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .get("/jobs/" + jobId)
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        final JobResponse job = RestAssuredUtils.extract(response, JobResponse.class);
-        assertThat(job).hasFieldOrPropertyWithValue("id", jobId);
-    }
-
-    @Test
-    @DisplayName("id와 일치한 Job이 없으면 400 상태를 반환한다.")
-    void get_ok() {
-        // given
-        final long notExistJobId = 1_000_000;
-
-        // when
-        final ExtractableResponse<Response> response = given().log().all()
-            .when()
-            .get("/jobs/" + notExistJobId)
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("일치하는 Job이 존재하지 않습니다.");
-    }
-
-    @Test
-    @DisplayName("Job을 생성한다.")
-    void create_created() {
-        // given
-        final Long companyId = getCompanyIds(Pageable.ofSize(1)).get(0);
-        final CreateJobRequest request = new CreateJobRequest(companyId, "backend");
-
-        // when
-        final ExtractableResponse<Response> response = given().log().all()
-            .when()
-            .body(request)
-            .contentType(ContentType.JSON)
-            .post("/jobs/")
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        final String location = response.header("Location");
-        final String jobId = location.split("/jobs/")[1];
-        assertThat(jobId).isNotBlank();
-    }
-
-    @Test
-    @DisplayName("companyId가 유효하지 않으면 400 상태를 반환한다")
-    void create_invalidCompanyId_badRequest() {
-        // given
-        final Long notExistCompanyId = 1_000_000L;
-        final CreateJobRequest request = new CreateJobRequest(notExistCompanyId, "backend");
-
-        // when
-        final ExtractableResponse<Response> response = given().log().all()
-            .when()
-            .body(request)
-            .contentType(ContentType.JSON)
-            .post("/jobs/")
+            .get("/companies/" + invalidCompanyId)
             .then().log().all()
             .extract();
 
@@ -139,57 +74,116 @@ public class JobTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("companyId가 null이면 400 상태를 반환한다")
-    void create_nullCompanyId_badRequest() {
+    @DisplayName("id로 Company 상세 정보를 조회한다.")
+    void get_ok() {
         // given
-        final HashMap<String, Object> request = new HashMap<>();
-        request.put("companyId", null);
-        request.put("position", "backend");
+        Long companyId = getCompanyIds(Pageable.ofSize(1)).get(0);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .body(request)
-            .contentType(ContentType.JSON)
-            .post("/jobs/")
+            .get("/companies/" + companyId)
             .then().log().all()
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("companyId 은(는) 필수 입력 값입니다.");
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final Company company = RestAssuredUtils.extract(response, Company.class);
+        assertThat(company.getId()).isEqualTo(companyId);
     }
 
     @Test
-    @DisplayName("position이 공백이면 400 상태를 반환한다")
-    void create_blankPosition_badRequest() {
+    @DisplayName("Company 생성에 성공하면 201 상태를 반환한다.")
+    void create_created() {
         // given
-        final HashMap<String, Object> request = new HashMap<>();
-        request.put("companyId", 1L);
-        request.put("position", "");
+        final CreateCompanyRequest request = new CreateCompanyRequest("test", "B", "SEOUL");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
             .body(request)
             .contentType(ContentType.JSON)
-            .post("/jobs/")
+            .post("/companies/" )
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        final String location = response.header("Location");
+        final String companyId = location.split("/companies/")[1];
+        assertThat(companyId).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("잘못된 Series 값을 넘기면 400 상태를 반환한다")
+    void create_invalidSeries_badRequest() throws JsonProcessingException {
+        // given
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("name", "test");
+        request.put("series", "invalid");
+        request.put("region", "SEOUL");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(objectMapper.writeValueAsString(request))
+            .contentType(ContentType.JSON)
+            .post("/companies/" )
             .then().log().all()
             .extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("position 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
+        assertThat(error.getMessage()).isEqualTo("series 필드에 유효한 값을 입력해야 합니다.");
     }
 
-    private List<Long> getJobIds(final Pageable pageable) {
-        final Page<Job> jobs = jobRepository.findAll(pageable);
-        return jobs.getContent()
-            .stream()
-            .map(Job::getId)
-            .toList();
+    @Test
+    @DisplayName("잘못된 Region 값을 넘기면 400 상태를 반환한다")
+    void create_invalidRegion_badRequest() throws JsonProcessingException {
+        // given
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("name", "test");
+        request.put("series", "A");
+        request.put("region", "invalid");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(objectMapper.writeValueAsString(request))
+            .contentType(ContentType.JSON)
+            .post("/companies/" )
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("region 필드에 유효한 값을 입력해야 합니다.");
+    }
+
+    @Test
+    @DisplayName("name이 공백이면 400 상태를 반환한다")
+    void create_blankName_statue400() {
+        // given
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("name", "");
+        request.put("series", "A");
+        request.put("region", "Seoul");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .post("/companies/" )
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("name 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
     }
 
     private List<Long> getCompanyIds(final Pageable pageable) {

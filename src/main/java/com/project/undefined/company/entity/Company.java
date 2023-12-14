@@ -8,11 +8,15 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Company extends BaseEntity {
 
     @Id
@@ -30,11 +34,7 @@ public class Company extends BaseEntity {
     @Enumerated(value = EnumType.STRING)
     private Region region;
 
-    public enum Series {
-        A, B, C, D, E, F, IPO
-    }
-
-    public enum Region {
-        SEOUL, ETC
+    public static Company of(final String name, final Series series, final Region region) {
+        return new Company(null, name, series, region);
     }
 }
