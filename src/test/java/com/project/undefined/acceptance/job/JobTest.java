@@ -15,6 +15,7 @@ import com.project.undefined.job.repository.JobRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,8 +120,8 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("companyId가 유효하지 않으면 400 상태를 반환한다")
     void create_invalidCompanyId_badRequest() {
         // given
-        final Long notExsitCompanyId = 1_000_000L;
-        final CreateJobRequest request = new CreateJobRequest(notExsitCompanyId, "backend");
+        final Long notExistCompanyId = 1_000_000L;
+        final CreateJobRequest request = new CreateJobRequest(notExistCompanyId, "backend");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -135,6 +136,52 @@ public class JobTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("일치하는 Company가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("companyId가 null이면 400 상태를 반환한다")
+    void create_nullCompanyId_badRequest() {
+        // given
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("companyId", null);
+        request.put("position", "backend");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .post("/jobs/")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("companyId 은(는) 필수 입력 값입니다.");
+    }
+
+    @Test
+    @DisplayName("position이 공백이면 400 상태를 반환한다")
+    void create_blankPosition_badRequest() {
+        // given
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("companyId", 1L);
+        request.put("position", "");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .post("/jobs/")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("position 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
     }
 
     private List<Long> getJobIds(final Pageable pageable) {

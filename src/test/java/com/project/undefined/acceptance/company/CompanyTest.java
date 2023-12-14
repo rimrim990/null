@@ -95,7 +95,29 @@ public class CompanyTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("Company 생성시 잘못된 Series 값을 넘기면 400 상태를 반환한다")
+    @DisplayName("Company 생성에 성공하면 201 상태를 반환한다.")
+    void create_created() {
+        // given
+        final CreateCompanyRequest request = new CreateCompanyRequest("test", Series.B, Region.SEOUL);
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .post("/companies/" )
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        final String location = response.header("Location");
+        final String companyId = location.split("/companies/")[1];
+        assertThat(companyId).isNotBlank();
+    }
+
+    @Test
+    @DisplayName("C잘못된 Series 값을 넘기면 400 상태를 반환한다")
     void create_invalidSeries_badRequest() throws JsonProcessingException {
         // given
         final HashMap<String, Object> request = new HashMap<>();
@@ -119,7 +141,7 @@ public class CompanyTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("Company 생성시 잘못된 Region 값을 넘기면 400 상태를 반환한다")
+    @DisplayName("잘못된 Region 값을 넘기면 400 상태를 반환한다")
     void create_invalidRegion_badRequest() throws JsonProcessingException {
         // given
         final HashMap<String, Object> request = new HashMap<>();
@@ -143,10 +165,13 @@ public class CompanyTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("Company 생성에 성공하면 201 상태를 반환한다.")
-    void create_created() {
+    @DisplayName("name이 공백이면 400 상태를 반환한다")
+    void create_blankName_statue400() {
         // given
-        final CreateCompanyRequest request = new CreateCompanyRequest("test", Series.B, Region.SEOUL);
+        final HashMap<String, Object> request = new HashMap<>();
+        request.put("name", "");
+        request.put("series", "A");
+        request.put("region", "Seoul");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -158,10 +183,9 @@ public class CompanyTest extends AcceptanceTest {
             .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        final String location = response.header("Location");
-        final String companyId = location.split("/companies/")[1];
-        assertThat(companyId).isNotBlank();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("name 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
     }
 
     private List<Long> getCompanyIds(final Pageable pageable) {
