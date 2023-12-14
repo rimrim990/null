@@ -10,8 +10,6 @@ import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
 import com.project.undefined.company.entity.Company;
-import com.project.undefined.company.entity.Region;
-import com.project.undefined.company.entity.Series;
 import com.project.undefined.company.repository.CompanyRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -98,7 +96,7 @@ public class CompanyTest extends AcceptanceTest {
     @DisplayName("Company 생성에 성공하면 201 상태를 반환한다.")
     void create_created() {
         // given
-        final CreateCompanyRequest request = new CreateCompanyRequest("test", Series.B, Region.SEOUL);
+        final CreateCompanyRequest request = new CreateCompanyRequest("test", "B", "SEOUL");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -117,7 +115,7 @@ public class CompanyTest extends AcceptanceTest {
     }
 
     @Test
-    @DisplayName("C잘못된 Series 값을 넘기면 400 상태를 반환한다")
+    @DisplayName("잘못된 Series 값을 넘기면 400 상태를 반환한다")
     void create_invalidSeries_badRequest() throws JsonProcessingException {
         // given
         final HashMap<String, Object> request = new HashMap<>();
@@ -137,7 +135,7 @@ public class CompanyTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("유효한 입력이 아닙니다.");
+        assertThat(error.getMessage()).isEqualTo("series 필드에 유효한 값을 입력해야 합니다.");
     }
 
     @Test
@@ -161,7 +159,7 @@ public class CompanyTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("유효한 입력이 아닙니다.");
+        assertThat(error.getMessage()).isEqualTo("region 필드에 유효한 값을 입력해야 합니다.");
     }
 
     @Test

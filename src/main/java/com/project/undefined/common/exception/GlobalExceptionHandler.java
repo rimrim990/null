@@ -8,7 +8,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,13 +23,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<ErrorResponse> handleCompanyException(final BaseException exception) {
         final ErrorResponse response = ErrorResponse.from(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body(response);
-    }
-
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException() {
-        final ErrorResponse response = ErrorResponse.from("유효한 입력이 아닙니다.");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
             .body(response);
     }
