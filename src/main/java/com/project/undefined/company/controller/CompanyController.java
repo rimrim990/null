@@ -1,6 +1,8 @@
 package com.project.undefined.company.controller;
 
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
+import com.project.undefined.company.dto.response.CompanyResponse;
+import com.project.undefined.company.service.CompanyService;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,10 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CompanyController {
 
+    private final CompanyService companyService;
+
     @PostMapping("/")
     public ResponseEntity<Void> create(@RequestBody final CreateCompanyRequest request) {
+        final CompanyResponse response = companyService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
-            .location(URI.create("/companies/1"))
+            .location(URI.create("/companies/" + response.getId()))
             .build();
     }
 }
