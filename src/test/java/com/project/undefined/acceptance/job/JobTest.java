@@ -35,6 +35,9 @@ public class JobTest extends AcceptanceTest {
     @Test
     @DisplayName("등록된 모든 Job 목록을 조회한다.")
     void getAll_ok() {
+        // given
+        final List<Long> jobIds = getJobIds(Pageable.unpaged());
+
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
@@ -44,15 +47,18 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        final List<JobResponse> jobs = RestAssuredUtils.extractAsList(response, JobResponse.class);
-        assertThat(jobs).hasSize(3);
+        final List<Long> extractedIds = RestAssuredUtils.extractAsList(response, JobResponse.class)
+            .stream()
+            .map(JobResponse::getId)
+            .toList();
+        assertThat(extractedIds).containsExactlyElementsOf(jobIds);
     }
 
     @Test
     @DisplayName("id와 일치한 Job의 세부 정보를 조회한다.")
     void get_invalidJobId_badRequest() {
         // given
-        final Long jobId = getJobIds(1).get(0);
+        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -71,7 +77,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("id와 일치한 Job이 없으면 400 상태를 반환한다.")
     void get_ok() {
         // given
-        final Long notExistJobId = 1_000_000L;
+        final long notExistJobId = 1_000_000;
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -90,7 +96,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("Job을 생성한다.")
     void create_created() {
         // given
-        final Long companyId = getCompanyIds(1).get(0);
+        final Long companyId = getCompanyIds(Pageable.ofSize(1)).get(0);
         final CreateJobRequest request = new CreateJobRequest(companyId, "backend");
 
         // when
@@ -131,8 +137,7 @@ public class JobTest extends AcceptanceTest {
         assertThat(error.getMessage()).isEqualTo("일치하는 Company가 존재하지 않습니다.");
     }
 
-    private List<Long> getJobIds(final int size) {
-        final Pageable pageable = Pageable.ofSize(size);
+    private List<Long> getJobIds(final Pageable pageable) {
         final Page<Job> jobs = jobRepository.findAll(pageable);
         return jobs.getContent()
             .stream()
@@ -140,8 +145,7 @@ public class JobTest extends AcceptanceTest {
             .toList();
     }
 
-    private List<Long> getCompanyIds(final int size) {
-        final Pageable pageable = Pageable.ofSize(size);
+    private List<Long> getCompanyIds(final Pageable pageable) {
         final Page<Company> companies = companyRepository.findAll(pageable);
         return companies.getContent()
             .stream()

@@ -38,7 +38,7 @@ public class CompanyTest extends AcceptanceTest {
     @DisplayName("등록된 모든 Company 목록을 조회한다")
     void getAll_ok() {
         // given
-        final long count = companyRepository.count();
+        final List<Long> companyIds = getCompanyIds(Pageable.unpaged());
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -49,8 +49,11 @@ public class CompanyTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        final List<Company> companies = RestAssuredUtils.extractAsList(response, Company.class);
-        assertThat(companies).hasSize((int) count);
+        final List<Long> extractedIds = RestAssuredUtils.extractAsList(response, Company.class)
+            .stream()
+            .map(Company::getId)
+            .toList();
+        assertThat(extractedIds).containsExactlyElementsOf(companyIds);
     }
 
     @Test
@@ -76,7 +79,7 @@ public class CompanyTest extends AcceptanceTest {
     @DisplayName("id로 Company 상세 정보를 조회한다.")
     void get_ok() {
         // given
-        Long companyId = getCompanyIds(1).get(0);
+        Long companyId = getCompanyIds(Pageable.ofSize(1)).get(0);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -161,8 +164,7 @@ public class CompanyTest extends AcceptanceTest {
         assertThat(companyId).isNotBlank();
     }
 
-    private List<Long> getCompanyIds(final int size) {
-        final Pageable pageable = Pageable.ofSize(size);
+    private List<Long> getCompanyIds(final Pageable pageable) {
         final Page<Company> companies = companyRepository.findAll(pageable);
         return companies.getContent()
             .stream()
