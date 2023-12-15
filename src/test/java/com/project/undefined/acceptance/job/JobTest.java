@@ -10,8 +10,11 @@ import com.project.undefined.company.entity.Company;
 import com.project.undefined.company.repository.CompanyRepository;
 import com.project.undefined.job.dto.request.CreateJobRequest;
 import com.project.undefined.job.dto.response.JobResponse;
+import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.entity.Job;
+import com.project.undefined.job.entity.Stage;
 import com.project.undefined.job.repository.JobRepository;
+import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -29,6 +32,9 @@ public class JobTest extends AcceptanceTest {
 
     @Autowired
     JobRepository jobRepository;
+
+    @Autowired
+    StageRepository stageRepository;
 
     @Autowired
     CompanyRepository companyRepository;
@@ -57,7 +63,7 @@ public class JobTest extends AcceptanceTest {
 
     @Test
     @DisplayName("id와 일치한 Job의 세부 정보를 조회한다.")
-    void get_invalidJobId_badRequest() {
+    void get_ok() {
         // given
         final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
 
@@ -76,7 +82,7 @@ public class JobTest extends AcceptanceTest {
 
     @Test
     @DisplayName("id와 일치한 Job이 없으면 400 상태를 반환한다.")
-    void get_ok() {
+    void get_invalidJobId_badRequest() {
         // given
         final long notExistJobId = 1_000_000;
 
@@ -84,6 +90,51 @@ public class JobTest extends AcceptanceTest {
         final ExtractableResponse<Response> response = given().log().all()
             .when()
             .get("/jobs/" + notExistJobId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("일치하는 Job이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("id와 연관된 Stage 목록을 조회한다")
+    void getRelatedStages_ok() {
+        // given
+        final Job job = getAnyJob();
+        final List<Long> relatedStageIds = stageRepository.findByJob(job)
+            .stream()
+            .map(Stage::getId)
+            .toList();
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .get("/jobs/stages/" + job.getId())
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final List<Long> resultStageIds = RestAssuredUtils.extractAsList(response, StageResponse.class)
+            .stream()
+            .map(StageResponse::getId)
+            .toList();
+        assertThat(resultStageIds).containsExactlyElementsOf(relatedStageIds);
+    }
+
+    @Test
+    @DisplayName("id와 일치한 Job이 없으면 400 상태를 반환한다.")
+    void getRelatedStages_invalidJobId_badRequest() {
+        // given
+        final long notExistJobId = 1_000_000;
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .get("/jobs/stages/" + notExistJobId)
             .then().log().all()
             .extract();
 
@@ -181,6 +232,13 @@ public class JobTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("position 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
+    }
+
+    private Job getAnyJob() {
+        return jobRepository.findAll(Pageable.ofSize(1))
+            .stream()
+            .findAny()
+            .get();
     }
 
     private List<Long> getJobIds(final Pageable pageable) {
