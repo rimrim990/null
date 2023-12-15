@@ -111,9 +111,8 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        final String location = response.header("Location");
-        final String jobId = location.split("/jobs/")[1];
-        assertThat(jobId).isNotBlank();
+        final Long jobId = RestAssuredUtils.parseLocationId(response, "/jobs/");
+        assertThat(jobRepository.existsById(jobId)).isTrue();
     }
 
     @Test
