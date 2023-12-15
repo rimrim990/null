@@ -7,6 +7,7 @@ import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.entity.Stage;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,5 +26,15 @@ public class StageService {
         final Stage stage = Stage.of(request.getName(), job);
         stageRepository.save(stage);
         return StageResponse.from(stage);
+    }
+
+    public List<StageResponse> findJobStages(final Long jobId) {
+        final Job job = jobRepository.findById(jobId)
+            .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
+
+        final List<Stage> stages = stageRepository.findByJob(job);
+        return stages.stream()
+            .map(StageResponse::from)
+            .toList();
     }
 }
