@@ -32,6 +32,6 @@ public class StageController {
 
     @GetMapping("/{id}")
     public StageResponse get(@PathVariable final Long id) {
-        return null;
+        return stageService.get(id);
     }
 }

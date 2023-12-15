@@ -46,6 +46,6 @@ public class JobController {
 
     @GetMapping("/stages/{id}")
     public List<StageResponse> getRelatedStages(@PathVariable final Long id) {
-        return stageService.findJobStages(id);
+        return stageService.getJobStages(id);
     }
 }

@@ -1,6 +1,7 @@
 package com.project.undefined.job.service;
 
 import com.project.undefined.common.exception.JobException;
+import com.project.undefined.common.exception.StageException;
 import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.entity.Job;
@@ -28,7 +29,14 @@ public class StageService {
         return StageResponse.from(stage);
     }
 
-    public List<StageResponse> findJobStages(final Long jobId) {
+    public StageResponse get(final Long id) {
+        final Stage stage = stageRepository.findById(id)
+            .orElseThrow(() -> new StageException("일치하는 Stage가 존재하지 않습니다."));
+
+        return StageResponse.from(stage);
+    }
+
+    public List<StageResponse> getJobStages(final Long jobId) {
         final Job job = jobRepository.findById(jobId)
             .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
 
