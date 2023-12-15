@@ -11,11 +11,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Stage extends BaseEntity {
 
     @Id
@@ -35,5 +39,9 @@ public class Stage extends BaseEntity {
 
     public enum State {
         NONE, PASS, FAIL, WAIT
+    }
+
+    public static Stage of(final String name, final Job job) {
+        return new Stage(null, name, job, State.NONE);
     }
 }
