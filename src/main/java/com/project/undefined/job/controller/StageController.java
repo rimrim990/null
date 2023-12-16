@@ -40,6 +40,6 @@ public class StageController {
     @PatchMapping("/{id}")
     public StageResponse updateState(@PathVariable final Long id,
             @Valid @RequestBody final UpdateStageRequest request) {
-        return null;
+        return stageService.updateState(id, request);
     }
 }

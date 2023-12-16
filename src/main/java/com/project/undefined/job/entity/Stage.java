@@ -44,4 +44,8 @@ public class Stage extends BaseEntity {
     public static Stage of(final String name, final Job job) {
         return new Stage(null, name, job, State.NONE);
     }
+
+    public void updateState(final State state) {
+        this.state = state;
+    }
 }
