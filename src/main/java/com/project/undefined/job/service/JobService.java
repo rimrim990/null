@@ -23,7 +23,7 @@ public class JobService {
         final Company company = companyRepository.findById(request.getCompanyId())
             .orElseThrow(() -> new CompanyException("일치하는 Company가 존재하지 않습니다."));
 
-        final Job job = Job.of(company, request.getPosition());
+        final Job job = Job.of(company.getId(), request.getPosition());
         jobRepository.save(job);
         return JobResponse.from(job);
     }
