@@ -13,7 +13,7 @@ import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.entity.Stage;
-import com.project.undefined.job.entity.Stage.State;
+import com.project.undefined.job.entity.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
@@ -149,7 +149,7 @@ public class StageTest extends AcceptanceTest {
 
     @Test
     @DisplayName("Stage 상태 값을 갱신한다.")
-    void updateStatus_ok() {
+    void updateState_ok() {
         // given
         final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
         final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
@@ -169,6 +169,53 @@ public class StageTest extends AcceptanceTest {
         final StageResponse stage = RestAssuredUtils.extract(response, StageResponse.class);
         assertThat(stage.getId()).isEqualTo(stageId);
         assertThat(stage.getState().toString()).isEqualTo(request.getState());
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 id로 Stage를 갱신하면 400 상태를 반환한다.")
+    void updateState_invalidStageId_badRequest() {
+        // given
+        final long notExistStageId = 1_000_000;
+        final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .patch("/stages/" + notExistStageId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("일치하는 Stage가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("잘못된 State 값을 넘기면 400 상태를 반환한다.")
+    void updateState_invalidState_badRequest() throws JsonProcessingException {
+        // given
+        final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
+        final Map<String, Object> request = new HashMap<>();
+        request.put("state", "invalid");
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(objectMapper.writeValueAsString(request))
+            .contentType(ContentType.JSON)
+            .patch("/stages/" + stageId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("state 필드에 유효한 값을 입력해야 합니다.");
     }
 
     private List<Long> getStageIds(final Pageable pageable) {
