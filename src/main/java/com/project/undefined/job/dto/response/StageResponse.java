@@ -1,7 +1,7 @@
 package com.project.undefined.job.dto.response;
 
 import com.project.undefined.job.entity.Stage;
-import com.project.undefined.job.entity.Stage.State;
+import com.project.undefined.job.entity.State;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

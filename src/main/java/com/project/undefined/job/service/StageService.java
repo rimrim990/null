@@ -7,7 +7,7 @@ import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.entity.Stage;
-import com.project.undefined.job.entity.Stage.State;
+import com.project.undefined.job.entity.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
 import java.util.List;
@@ -52,7 +52,7 @@ public class StageService {
         final Stage stage = stageRepository.findById(id)
             .orElseThrow(() -> new StageException("일치하는 Stage가 존재하지 않습니다."));
 
-        stage.updateState(State.valueOf(request.getState()));
+        stage.updateState(State.from(request.getState()));
         return StageResponse.from(stage);
     }
 }

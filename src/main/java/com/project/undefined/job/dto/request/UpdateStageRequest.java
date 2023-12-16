@@ -1,8 +1,7 @@
 package com.project.undefined.job.dto.request;
 
-import static com.project.undefined.job.entity.Stage.*;
-
 import com.project.undefined.common.validation.Enum;
+import com.project.undefined.job.entity.State;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
