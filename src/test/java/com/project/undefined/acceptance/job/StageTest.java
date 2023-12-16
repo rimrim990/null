@@ -9,9 +9,11 @@ import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.job.dto.request.CreateStageRequest;
+import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.entity.Stage;
+import com.project.undefined.job.entity.Stage.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
@@ -143,6 +145,30 @@ public class StageTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse stage = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(stage.getMessage()).isEqualTo("일치하는 Stage가 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("Stage 상태 값을 갱신한다.")
+    void updateStatus_ok() {
+        // given
+        final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
+        final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .body(request)
+            .contentType(ContentType.JSON)
+            .patch("/stages/" + stageId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        final StageResponse stage = RestAssuredUtils.extract(response, StageResponse.class);
+        assertThat(stage.getId()).isEqualTo(stageId);
+        assertThat(stage.getState().toString()).isEqualTo(request.getState());
     }
 
     private List<Long> getStageIds(final Pageable pageable) {

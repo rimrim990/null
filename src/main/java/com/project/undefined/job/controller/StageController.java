@@ -1,6 +1,7 @@
 package com.project.undefined.job.controller;
 
 import com.project.undefined.job.dto.request.CreateStageRequest;
+import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.service.StageService;
 import jakarta.validation.Valid;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,5 +35,11 @@ public class StageController {
     @GetMapping("/{id}")
     public StageResponse get(@PathVariable final Long id) {
         return stageService.get(id);
+    }
+
+    @PatchMapping("/{id}")
+    public StageResponse updateState(@PathVariable final Long id,
+            @Valid @RequestBody final UpdateStageRequest request) {
+        return null;
     }
 }
