@@ -18,7 +18,6 @@ import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -192,9 +191,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("companyId가 null이면 400 상태를 반환한다")
     void create_nullCompanyId_badRequest() {
         // given
-        final HashMap<String, Object> request = new HashMap<>();
-        request.put("companyId", null);
-        request.put("position", "backend");
+        final CreateJobRequest request = new CreateJobRequest(null, "backend");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -215,9 +212,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("position이 공백이면 400 상태를 반환한다")
     void create_blankPosition_badRequest() {
         // given
-        final HashMap<String, Object> request = new HashMap<>();
-        request.put("companyId", 1L);
-        request.put("position", "");
+        final CreateJobRequest request = new CreateJobRequest(1L, "");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()

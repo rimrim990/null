@@ -3,8 +3,6 @@ package com.project.undefined.acceptance.job;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
@@ -19,9 +17,7 @@ import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +33,6 @@ public class StageTest extends AcceptanceTest {
 
     @Autowired
     private JobRepository jobRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("Stage를 생성한다.")
@@ -65,16 +58,15 @@ public class StageTest extends AcceptanceTest {
 
     @Test
     @DisplayName("name이 공백이면 400 상태를 반환한다.")
-    void create_blankName_badRequest() throws JsonProcessingException {
+    void create_blankName_badRequest() {
         // given
-        final Map<String, Object> request = new HashMap<>();
-        request.put("jobId", "1");
-        request.put("name", "");
+        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
+        final CreateStageRequest request = new CreateStageRequest(jobId, "");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .body(objectMapper.writeValueAsString(request))
+            .body(request)
             .contentType(ContentType.JSON)
             .post("/stages/")
             .then().log().all()
@@ -88,16 +80,14 @@ public class StageTest extends AcceptanceTest {
 
     @Test
     @DisplayName("jobId가 null이면 400 상태를 반환한다.")
-    void create_nullJobId_badRequest() throws JsonProcessingException {
+    void create_nullJobId_badRequest() {
         // given
-        final Map<String, Object> request = new HashMap<>();
-        request.put("jobId", null);
-        request.put("name", "test");
+        final CreateStageRequest request = new CreateStageRequest(null, "test");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .body(objectMapper.writeValueAsString(request))
+            .body(request)
             .contentType(ContentType.JSON)
             .post("/stages/")
             .then().log().all()
@@ -196,16 +186,15 @@ public class StageTest extends AcceptanceTest {
 
     @Test
     @DisplayName("잘못된 State 값을 넘기면 400 상태를 반환한다.")
-    void updateState_invalidState_badRequest() throws JsonProcessingException {
+    void updateState_invalidState_badRequest() {
         // given
         final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
-        final Map<String, Object> request = new HashMap<>();
-        request.put("state", "invalid");
+        final UpdateStageRequest request = new UpdateStageRequest("invalidState");
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
             .when()
-            .body(objectMapper.writeValueAsString(request))
+            .body(request)
             .contentType(ContentType.JSON)
             .patch("/stages/" + stageId)
             .then().log().all()
