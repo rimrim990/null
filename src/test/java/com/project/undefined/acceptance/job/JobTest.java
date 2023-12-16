@@ -102,10 +102,7 @@ public class JobTest extends AcceptanceTest {
     void getRelatedStages_ok() {
         // given
         final Job job = DataUtils.findAny(jobRepository);
-        final List<Long> relatedStageIds = stageRepository.findByJob(job)
-            .stream()
-            .map(Stage::getId)
-            .toList();
+        final List<Long> relatedStageIds = findRelatedStageIds(job);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -116,6 +113,7 @@ public class JobTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
         final List<Long> resultStageIds = RestAssuredUtils.extractAsList(response, StageResponse.class)
             .stream()
             .map(StageResponse::getId)
@@ -226,5 +224,12 @@ public class JobTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("position 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
+    }
+
+    private List<Long> findRelatedStageIds(final Job job) {
+        return stageRepository.findByJob(job)
+            .stream()
+            .map(Stage::getId)
+            .toList();
     }
 }
