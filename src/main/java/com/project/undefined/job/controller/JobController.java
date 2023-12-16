@@ -2,7 +2,9 @@ package com.project.undefined.job.controller;
 
 import com.project.undefined.job.dto.request.CreateJobRequest;
 import com.project.undefined.job.dto.response.JobResponse;
+import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.service.JobService;
+import com.project.undefined.job.service.StageService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class JobController {
 
     private final JobService jobService;
+    private final StageService stageService;
 
     @PostMapping("/")
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateJobRequest request) {
@@ -39,5 +42,10 @@ public class JobController {
     @GetMapping("/{id}")
     public JobResponse get(@PathVariable final Long id)  {
         return jobService.get(id);
+    }
+
+    @GetMapping("/stages/{id}")
+    public List<StageResponse> getRelatedStages(@PathVariable final Long id) {
+        return stageService.getJobStages(id);
     }
 }

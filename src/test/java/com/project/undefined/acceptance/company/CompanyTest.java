@@ -109,9 +109,8 @@ public class CompanyTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        final String location = response.header("Location");
-        final String companyId = location.split("/companies/")[1];
-        assertThat(companyId).isNotBlank();
+        final Long companyId = RestAssuredUtils.parseLocationId(response, "/companies/");
+        assertThat(companyRepository.existsById(companyId)).isTrue();
     }
 
     @Test

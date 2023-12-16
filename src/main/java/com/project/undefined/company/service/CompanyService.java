@@ -34,8 +34,18 @@ public class CompanyService {
     }
 
     public CompanyResponse get(final Long id) {
-        final Company company = companyRepository.findById(id)
-            .orElseThrow(() -> new CompanyException("일치하는 Company가 존재하지 않습니다."));
+        final Company company = getOne(id);
         return CompanyResponse.from(company);
+    }
+
+    public void validate(final Long id) {
+        if (!companyRepository.existsById(id)) {
+            throw new CompanyException("일치하는 Company가 존재하지 않습니다.");
+        }
+    }
+
+    Company getOne(final Long id) {
+        return companyRepository.findById(id)
+            .orElseThrow(() -> new CompanyException("일치하는 Company가 존재하지 않습니다."));
     }
 }
