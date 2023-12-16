@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.undefined.acceptance.AcceptanceTest;
+import com.project.undefined.acceptance.utils.DataUtils;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.job.dto.request.CreateStageRequest;
@@ -17,12 +18,9 @@ import com.project.undefined.job.repository.StageRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("Stage API 인수 테스트")
@@ -38,7 +36,7 @@ public class StageTest extends AcceptanceTest {
     @DisplayName("Stage를 생성한다.")
     void create_created() {
         // given
-        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
+        final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
         final CreateStageRequest request = new CreateStageRequest(jobId, "test");
 
         // when
@@ -60,7 +58,7 @@ public class StageTest extends AcceptanceTest {
     @DisplayName("name이 공백이면 400 상태를 반환한다.")
     void create_blankName_badRequest() {
         // given
-        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
+        final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
         final CreateStageRequest request = new CreateStageRequest(jobId, "");
 
         // when
@@ -103,7 +101,7 @@ public class StageTest extends AcceptanceTest {
     @DisplayName("Stage 상세 정보를 조회한다.")
     void get() {
         // given
-        final Long stageId = getStageIds(Pageable.ofSize(1)).get(0);
+        final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -141,7 +139,7 @@ public class StageTest extends AcceptanceTest {
     @DisplayName("Stage 상태 값을 갱신한다.")
     void updateState_ok() {
         // given
-        final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
+        final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
         final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
 
         // when
@@ -188,7 +186,7 @@ public class StageTest extends AcceptanceTest {
     @DisplayName("잘못된 State 값을 넘기면 400 상태를 반환한다.")
     void updateState_invalidState_badRequest() {
         // given
-        final long stageId = getStageIds(Pageable.ofSize(1)).get(0);
+        final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
         final UpdateStageRequest request = new UpdateStageRequest("invalidState");
 
         // when
@@ -205,21 +203,5 @@ public class StageTest extends AcceptanceTest {
 
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("state 필드에 유효한 값을 입력해야 합니다.");
-    }
-
-    private List<Long> getStageIds(final Pageable pageable) {
-        final Page<Stage> stages = stageRepository.findAll(pageable);
-        return stages.getContent()
-            .stream()
-            .map(Stage::getId)
-            .toList();
-    }
-
-    private List<Long> getJobIds(final Pageable pageable) {
-        final Page<Job> jobs = jobRepository.findAll(pageable);
-        return jobs.getContent()
-            .stream()
-            .map(Job::getId)
-            .toList();
     }
 }

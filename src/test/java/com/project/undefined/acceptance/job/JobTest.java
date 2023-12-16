@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.project.undefined.acceptance.AcceptanceTest;
+import com.project.undefined.acceptance.utils.DataUtils;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.company.entity.Company;
@@ -22,8 +23,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("Job API 인수 테스트")
@@ -42,7 +41,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("등록된 모든 Job 목록을 조회한다.")
     void getAll_ok() {
         // given
-        final List<Long> jobIds = getJobIds(Pageable.unpaged());
+        final List<Long> jobIds = DataUtils.findAllIds(jobRepository, Job::getId);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -64,7 +63,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("id와 일치한 Job의 세부 정보를 조회한다.")
     void get_ok() {
         // given
-        final Long jobId = getJobIds(Pageable.ofSize(1)).get(0);
+        final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
 
         // when
         final ExtractableResponse<Response> response = given().log().all()
@@ -102,7 +101,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("id와 연관된 Stage 목록을 조회한다")
     void getRelatedStages_ok() {
         // given
-        final Job job = getAnyJob();
+        final Job job = DataUtils.findAny(jobRepository);
         final List<Long> relatedStageIds = stageRepository.findByJob(job)
             .stream()
             .map(Stage::getId)
@@ -147,7 +146,7 @@ public class JobTest extends AcceptanceTest {
     @DisplayName("Job을 생성한다.")
     void create_created() {
         // given
-        final Long companyId = getCompanyIds(Pageable.ofSize(1)).get(0);
+        final Long companyId = DataUtils.findAnyId(companyRepository, Company::getId);
         final CreateJobRequest request = new CreateJobRequest(companyId, "backend");
 
         // when
@@ -227,28 +226,5 @@ public class JobTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("position 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
-    }
-
-    private Job getAnyJob() {
-        return jobRepository.findAll(Pageable.ofSize(1))
-            .stream()
-            .findAny()
-            .get();
-    }
-
-    private List<Long> getJobIds(final Pageable pageable) {
-        final Page<Job> jobs = jobRepository.findAll(pageable);
-        return jobs.getContent()
-            .stream()
-            .map(Job::getId)
-            .toList();
-    }
-
-    private List<Long> getCompanyIds(final Pageable pageable) {
-        final Page<Company> companies = companyRepository.findAll(pageable);
-        return companies.getContent()
-            .stream()
-            .map(Company::getId)
-            .toList();
     }
 }
