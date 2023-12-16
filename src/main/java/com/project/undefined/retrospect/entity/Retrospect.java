@@ -31,7 +31,8 @@ public class Retrospect extends BaseEntity {
     @Column(nullable = false)
     private String summary;
 
-    @Column(nullable = false)
+    @Column
+    private Long stageId;
 
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name ="score"))

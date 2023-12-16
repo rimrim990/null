@@ -33,6 +33,7 @@ create table if not exists job
 create table if not exists retrospect
 (
     id               bigint       not null auto_increment,
+    stage_id         bigint       not null,
     content          varchar(255) not null,
     good_point       varchar(255) not null,
     bad_point        varchar(255) not null,
