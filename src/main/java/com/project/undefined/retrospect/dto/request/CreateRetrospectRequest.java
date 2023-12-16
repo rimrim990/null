@@ -1,11 +1,10 @@
 package com.project.undefined.retrospect.dto.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.validator.constraints.Range;
 
 @Getter
 @AllArgsConstructor
@@ -23,8 +22,7 @@ public class CreateRetrospectRequest {
     @NotBlank
     private String badPoint;
 
-    @Min(1)
-    @Max(5)
+    @Range(min=1, max=5)
     private Short score;
 
     @NotBlank
