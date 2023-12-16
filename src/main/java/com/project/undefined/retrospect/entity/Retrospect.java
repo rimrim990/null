@@ -8,11 +8,16 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Retrospect extends BaseEntity {
 
     @Id
@@ -37,4 +42,10 @@ public class Retrospect extends BaseEntity {
     @Embedded
     @AttributeOverride(name = "value", column = @Column(name ="score"))
     private Score score;
+
+    @Builder
+    private Retrospect(final String content, final String goodPoint, final String badPoint, final String summary,
+            final Long stageId, final Score score) {
+        this(null, content, goodPoint, badPoint, summary, stageId, score);
+    }
 }

@@ -1,6 +1,8 @@
 package com.project.undefined.retrospect.controller;
 
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
+import com.project.undefined.retrospect.dto.response.RetrospectResponse;
+import com.project.undefined.retrospect.service.RetrospectService;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RetrospectController {
 
+    private final RetrospectService retrospectService;
+
     @PostMapping("/")
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateRetrospectRequest request) {
+        final RetrospectResponse retrospectResponse = retrospectService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
-            .location(URI.create("/retrospects/1"))
+            .location(URI.create("/retrospects/" + retrospectResponse.getId()))
             .build();
     }
 }
