@@ -19,7 +19,13 @@ public class RetrospectService {
     public RetrospectResponse create(final CreateRetrospectRequest request) {
         stageService.validate(request.getStageId());
 
-        final Retrospect retrospect = Retrospect.builder()
+        final Retrospect retrospect = mapFrom(request);
+        retrospectRepository.save(retrospect);
+        return RetrospectResponse.from(retrospect);
+    }
+
+    private Retrospect mapFrom(final CreateRetrospectRequest request) {
+        return Retrospect.builder()
             .content(request.getContent())
             .goodPoint(request.getGoodPoint())
             .badPoint(request.getBadPoint())
@@ -27,8 +33,5 @@ public class RetrospectService {
             .stageId(request.getStageId())
             .score(new Score(request.getScore()))
             .build();
-
-        retrospectRepository.save(retrospect);
-        return RetrospectResponse.from(retrospect);
     }
 }
