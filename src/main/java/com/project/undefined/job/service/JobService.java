@@ -36,8 +36,12 @@ public class JobService {
     }
 
     public JobResponse get(final Long id) {
-        final Job job = jobRepository.findById(id)
-            .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
+        final Job job = getOne(id);
         return JobResponse.from(job);
+    }
+
+    Job getOne(final Long id) {
+        return jobRepository.findById(id)
+            .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
     }
 }
