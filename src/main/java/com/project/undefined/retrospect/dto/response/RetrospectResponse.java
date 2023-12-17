@@ -1,7 +1,6 @@
 package com.project.undefined.retrospect.dto.response;
 
 import com.project.undefined.retrospect.entity.Retrospect;
-import com.project.undefined.retrospect.entity.Score;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +15,7 @@ public class RetrospectResponse {
     private String content;
     private String goodPoint;
     private String badPoint;
-    private Score score;
+    private Short score;
     private String summary;
 
     public static RetrospectResponse from(final Retrospect retrospect) {
@@ -26,7 +25,7 @@ public class RetrospectResponse {
             .goodPoint(retrospect.getGoodPoint())
             .badPoint(retrospect.getBadPoint())
             .summary(retrospect.getSummary())
-            .score(retrospect.getScore())
+            .score(retrospect.getScore().getValue())
             .build();
     }
 }
