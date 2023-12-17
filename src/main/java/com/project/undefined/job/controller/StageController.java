@@ -1,5 +1,6 @@
 package com.project.undefined.job.controller;
 
+import com.project.undefined.common.dto.response.EmptyResponse;
 import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
@@ -8,6 +9,7 @@ import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +43,15 @@ public class StageController {
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/retrospects/" + retrospectResponse.getId()))
             .build();
+    }
+
+    @GetMapping("/{id}/retrospects")
+    public ResponseEntity<?> getRelatedRetrospects(@PathVariable final Long id) {
+       final RetrospectResponse retrospectResponse = stageService.getRelatedRetrospect(id);
+       if (Objects.isNull(retrospectResponse)) {
+           return ResponseEntity.ok(new EmptyResponse());
+       }
+       return ResponseEntity.ok(retrospectResponse);
     }
 
     @GetMapping("/{id}")

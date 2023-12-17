@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,5 +51,9 @@ public class Stage extends BaseEntity {
 
     public void attachRetrospect(final Long retrospectId) {
         this.retrospectId = retrospectId;
+    }
+
+    public boolean hasAttachedRetrospect() {
+        return Objects.nonNull(retrospectId);
     }
 }

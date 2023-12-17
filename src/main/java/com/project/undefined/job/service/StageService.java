@@ -50,6 +50,16 @@ public class StageService {
             .toList();
     }
 
+    public RetrospectResponse getRelatedRetrospect(final Long id) {
+        final Stage stage = getOne(id);
+        RetrospectResponse retrospect = null;
+
+        if (stage.hasAttachedRetrospect()) {
+            retrospect = retrospectService.get(stage.getRetrospectId());
+        }
+        return retrospect;
+    }
+
     public StageResponse updateState(final Long id, final UpdateStageRequest request) {
         final Stage stage = getOne(id);
         stage.updateState(State.from(request.getState()));
