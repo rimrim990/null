@@ -1,8 +1,11 @@
 package com.project.undefined.common.exception;
 
-public abstract class BaseException extends RuntimeException{
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-    public BaseException(String message) {
-        super(message);
-    }
+@Getter
+@AllArgsConstructor
+public abstract class BaseException extends RuntimeException {
+
+    private final ErrorCode errorCode;
 }

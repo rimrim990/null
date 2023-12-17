@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
 import com.project.undefined.company.entity.Company;
 import com.project.undefined.company.repository.CompanyRepository;
@@ -70,7 +71,7 @@ public class CompanyTest extends AcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-        assertThat(error.getMessage()).isEqualTo("일치하는 Company가 존재하지 않습니다.");
+        assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_COMPANY.getMessage());
     }
 
     @Test

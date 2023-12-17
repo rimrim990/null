@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class Stage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private Long retrospectId;
+
     @Column(nullable = false)
     private String name;
 
@@ -38,10 +42,18 @@ public class Stage extends BaseEntity {
     private State state;
 
     public static Stage of(final String name, final Job job) {
-        return new Stage(null, name, job, State.NONE);
+        return new Stage(null, null, name, job, State.NONE);
     }
 
     public void updateState(final State state) {
         this.state = state;
+    }
+
+    public void attachRetrospect(final Long retrospectId) {
+        this.retrospectId = retrospectId;
+    }
+
+    public boolean hasAttachedRetrospect() {
+        return Objects.nonNull(retrospectId);
     }
 }

@@ -1,5 +1,6 @@
 package com.project.undefined.job.service;
 
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.common.exception.JobException;
 import com.project.undefined.company.service.CompanyService;
 import com.project.undefined.job.dto.request.CreateJobRequest;
@@ -38,6 +39,6 @@ public class JobService {
 
     Job getOne(final Long id) {
         return jobRepository.findById(id)
-            .orElseThrow(() -> new JobException("일치하는 Job이 존재하지 않습니다."));
+            .orElseThrow(() -> new JobException(ErrorCode.NON_MATCH_JOB));
     }
 }
