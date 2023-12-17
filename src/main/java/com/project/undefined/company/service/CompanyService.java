@@ -1,6 +1,7 @@
 package com.project.undefined.company.service;
 
 import com.project.undefined.common.exception.CompanyException;
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
 import com.project.undefined.company.dto.response.CompanyResponse;
 import com.project.undefined.company.entity.Company;
@@ -40,12 +41,12 @@ public class CompanyService {
 
     public void validate(final Long id) {
         if (!companyRepository.existsById(id)) {
-            throw new CompanyException("일치하는 Company가 존재하지 않습니다.");
+            throw new CompanyException(ErrorCode.NON_MATCH_COMPANY);
         }
     }
 
     Company getOne(final Long id) {
         return companyRepository.findById(id)
-            .orElseThrow(() -> new CompanyException("일치하는 Company가 존재하지 않습니다."));
+            .orElseThrow(() -> new CompanyException(ErrorCode.NON_MATCH_COMPANY));
     }
 }

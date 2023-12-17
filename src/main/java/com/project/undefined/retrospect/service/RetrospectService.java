@@ -1,5 +1,6 @@
 package com.project.undefined.retrospect.service;
 
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.common.exception.RetrospectException;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
@@ -28,7 +29,7 @@ public class RetrospectService {
 
     private Retrospect getOne(final Long id) {
         return retrospectRepository.findById(id)
-            .orElseThrow(() -> new RetrospectException("일치하는 Retrospect가 존재하지 않습니다."));
+            .orElseThrow(() -> new RetrospectException(ErrorCode.NON_MATCH_RETROSPECT));
     }
 
     private Retrospect mapFrom(final CreateRetrospectRequest request) {

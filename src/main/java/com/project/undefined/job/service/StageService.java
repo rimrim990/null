@@ -1,5 +1,6 @@
 package com.project.undefined.job.service;
 
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.common.exception.StageException;
 import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.request.UpdateStageRequest;
@@ -66,14 +67,8 @@ public class StageService {
         return StageResponse.from(stage);
     }
 
-    public void validate(final Long id) {
-        if (!stageRepository.existsById(id)) {
-            throw new StageException("일치하는 Stage가 존재하지 않습니다.");
-        }
-    }
-
     private Stage getOne(final Long id) {
         return stageRepository.findById(id)
-            .orElseThrow(() -> new StageException("일치하는 Stage가 존재하지 않습니다."));
+            .orElseThrow(() -> new StageException(ErrorCode.NON_MATCH_STAGE));
     }
 }

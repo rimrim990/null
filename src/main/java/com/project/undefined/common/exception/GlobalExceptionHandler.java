@@ -21,9 +21,10 @@ public class GlobalExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(BaseException.class)
-    public ResponseEntity<ErrorResponse> handleCompanyException(final BaseException exception) {
-        final ErrorResponse response = ErrorResponse.from(exception.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleBaseException(final BaseException exception) {
+        final ErrorCode errorCode = exception.getErrorCode();
+        final ErrorResponse response = ErrorResponse.from(errorCode.getMessage());
+        return ResponseEntity.status(errorCode.getStatus())
             .body(response);
     }
 
