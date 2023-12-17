@@ -1,5 +1,6 @@
 package com.project.undefined.retrospect.service;
 
+import com.project.undefined.common.exception.RetrospectException;
 import com.project.undefined.job.service.StageService;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
@@ -22,6 +23,16 @@ public class RetrospectService {
         final Retrospect retrospect = mapFrom(request);
         retrospectRepository.save(retrospect);
         return RetrospectResponse.from(retrospect);
+    }
+
+    public RetrospectResponse get(final Long id) {
+        final Retrospect retrospect = getOne(id);
+        return RetrospectResponse.from(retrospect);
+    }
+
+    private Retrospect getOne(final Long id) {
+        return retrospectRepository.findById(id)
+            .orElseThrow(() -> new RetrospectException("일치하는 Retrospect가 존재하지 않습니다."));
     }
 
     private Retrospect mapFrom(final CreateRetrospectRequest request) {

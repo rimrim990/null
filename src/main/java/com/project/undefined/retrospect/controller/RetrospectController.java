@@ -32,6 +32,6 @@ public class RetrospectController {
 
     @GetMapping("/{id}")
     public RetrospectResponse get(@PathVariable final Long id) {
-        return null;
+        return retrospectService.get(id);
     }
 }
