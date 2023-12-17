@@ -41,7 +41,6 @@ public class RetrospectService {
             .goodPoint(request.getGoodPoint())
             .badPoint(request.getBadPoint())
             .summary(request.getSummary())
-            .stageId(request.getStageId())
             .score(new Score(request.getScore()))
             .build();
     }

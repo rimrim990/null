@@ -26,6 +26,9 @@ public class Stage extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private Long retrospectId;
+
     @Column(nullable = false)
     private String name;
 
@@ -38,7 +41,7 @@ public class Stage extends BaseEntity {
     private State state;
 
     public static Stage of(final String name, final Job job) {
-        return new Stage(null, name, job, State.NONE);
+        return new Stage(null, null, name, job, State.NONE);
     }
 
     public void updateState(final State state) {

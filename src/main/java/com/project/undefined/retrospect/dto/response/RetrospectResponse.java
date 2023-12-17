@@ -13,7 +13,6 @@ import lombok.Getter;
 public class RetrospectResponse {
 
     private Long id;
-    private Long stageId;
     private String content;
     private String goodPoint;
     private String badPoint;
@@ -23,7 +22,6 @@ public class RetrospectResponse {
     public static RetrospectResponse from(final Retrospect retrospect) {
         return RetrospectResponse.builder()
             .id(retrospect.getId())
-            .stageId(retrospect.getStageId())
             .content(retrospect.getContent())
             .goodPoint(retrospect.getGoodPoint())
             .badPoint(retrospect.getBadPoint())
