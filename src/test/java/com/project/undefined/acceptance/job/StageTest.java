@@ -273,6 +273,24 @@ public class StageTest extends AcceptanceTest {
         }
 
         @Test
+        @DisplayName("id와 연관된 Retrospect가 없으면 빈 결과를 반환한다")
+        void getRelatedRetrospect_emptyRetrospect_ok() {
+            // given
+            final Long stageId = selectNotAttachedStageId();
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/stages/" + stageId+ "/retrospects")
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.response().asString()).isEqualTo("{}");
+        }
+
+        @Test
         @DisplayName("id와 연관된 Stage가 없으면 400 상태를 반환한다")
         void getRelatedRetrospect_invalidStageId_badRequest() {
             // given
@@ -366,4 +384,12 @@ public class StageTest extends AcceptanceTest {
         }
     }
 
+    private Long selectNotAttachedStageId() {
+        return stageRepository.findAll()
+            .stream()
+            .filter(stage -> !stage.hasAttachedRetrospect())
+            .map(Stage::getId)
+            .findAny()
+            .get();
+    }
 }
