@@ -209,7 +209,7 @@ public class JobTest extends AcceptanceTest {
             // when
             final ExtractableResponse<Response> response = given().log().all()
                 .when()
-                .get("/jobs/stages/" + job.getId())
+                .get("/jobs/" + job.getId() + "/stages")
                 .then().log().all()
                 .extract();
 
@@ -232,7 +232,7 @@ public class JobTest extends AcceptanceTest {
             // when
             final ExtractableResponse<Response> response = given().log().all()
                 .when()
-                .get("/jobs/stages/" + notExistJobId)
+                .get("/jobs/" + notExistJobId + "/stages")
                 .then().log().all()
                 .extract();
 
