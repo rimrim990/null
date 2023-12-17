@@ -16,6 +16,7 @@ import com.project.undefined.job.entity.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
+import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.repository.RetrospectRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -248,6 +249,50 @@ public class StageTest extends AcceptanceTest {
     }
 
     @Nested
+    class getRelatedRetrospect {
+
+        @Test
+        @DisplayName("id와 연관된 Retrospect를 조회한다")
+        void getRelatedRetrospect_ok() {
+            // given
+            final Stage stage = DataUtils.findAny(stageRepository);
+            final Long relatedRetrospectId = stage.getRetrospectId();
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/stages/" + stage.getId()+ "/retrospects")
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            final Long resultRetrospectId = RestAssuredUtils.extract(response, RetrospectResponse.class)
+                .getId();
+            assertThat(resultRetrospectId).isEqualTo(relatedRetrospectId);
+        }
+
+        @Test
+        @DisplayName("id와 연관된 Stage가 없으면 400 상태를 반환한다")
+        void getRelatedRetrospect_invalidStageId_badRequest() {
+            // given
+            final long invalidStageId = 1_000_000;
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/stages/" + invalidStageId+ "/retrospects")
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+            assertThat(error.getMessage()).isEqualTo("일치하는 Stage가 존재하지 않습니다.");
+        }
+    }
+
+    @Nested
     class updateState {
 
         @Test
@@ -320,4 +365,5 @@ public class StageTest extends AcceptanceTest {
             assertThat(error.getMessage()).isEqualTo("state 필드에 유효한 값을 입력해야 합니다.");
         }
     }
+
 }
