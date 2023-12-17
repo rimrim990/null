@@ -10,6 +10,8 @@ import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.job.entity.Stage;
 import com.project.undefined.job.repository.StageRepository;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
+import com.project.undefined.retrospect.dto.response.RetrospectResponse;
+import com.project.undefined.retrospect.entity.Retrospect;
 import com.project.undefined.retrospect.repository.RetrospectRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -143,5 +145,43 @@ public class RetrospectTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
         assertThat(error.getMessage()).isEqualTo("score 은(는) 5이하 1이상의 값이어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("Retrospect 상세 정보를 조회한다.")
+    void get() {
+        // given
+        final Long retrospectId = DataUtils.findAnyId(retrospectRepository, Retrospect::getId);
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .get("/retrospects/" + retrospectId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        final RetrospectResponse retrospect = RestAssuredUtils.extract(response, RetrospectResponse.class);
+        assertThat(retrospect.getId()).isEqualTo(retrospectId);
+    }
+
+    @Test
+    @DisplayName("id가 유효하지 않으면 400 상태를 반환한다.")
+    void get_invalidRetrospectId_badRequest() {
+        // given
+        final long invalidRetrospectId = 1_000_000;
+
+        // when
+        final ExtractableResponse<Response> response = given().log().all()
+            .when()
+            .get("/retrospects/" + invalidRetrospectId)
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+        assertThat(error.getMessage()).isEqualTo("일치하는 Retrospect가 존재하지 않습니다.");
     }
 }

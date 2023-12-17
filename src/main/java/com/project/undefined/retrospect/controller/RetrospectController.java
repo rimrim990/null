@@ -8,6 +8,8 @@ import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,5 +28,10 @@ public class RetrospectController {
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/retrospects/" + retrospectResponse.getId()))
             .build();
+    }
+
+    @GetMapping("/{id}")
+    public RetrospectResponse get(@PathVariable final Long id) {
+        return null;
     }
 }
