@@ -47,4 +47,8 @@ public class Stage extends BaseEntity {
     public void updateState(final State state) {
         this.state = state;
     }
+
+    public void attachRetrospect(final Long retrospectId) {
+        this.retrospectId = retrospectId;
+    }
 }

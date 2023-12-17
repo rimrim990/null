@@ -4,6 +4,8 @@ import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.service.StageService;
+import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
+import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,15 @@ public class StageController {
         final StageResponse stageResponse = stageService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/stages/" + stageResponse.getId()))
+            .build();
+    }
+
+    @PostMapping("/{id}/retrospects")
+    public ResponseEntity<Void> createdRelatedRetrospect(@PathVariable final Long id,
+            @Valid @RequestBody final CreateRetrospectRequest request) {
+        final RetrospectResponse retrospectResponse = stageService.attachRetrospect(id, request);
+        return ResponseEntity.status(HttpStatus.CREATED.value())
+            .location(URI.create("/retrospects/" + retrospectResponse.getId()))
             .build();
     }
 
