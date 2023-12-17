@@ -7,8 +7,6 @@ import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
 import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
-import com.project.undefined.job.entity.Stage;
-import com.project.undefined.job.repository.StageRepository;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.entity.Retrospect;
@@ -28,9 +26,6 @@ import org.springframework.http.HttpStatus;
 public class RetrospectTest extends AcceptanceTest {
 
     @Autowired
-    private StageRepository stageRepository;
-
-    @Autowired
     private RetrospectRepository retrospectRepository;
 
     @Nested
@@ -40,8 +35,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("Retrospect를 생성한다.")
         void create_created() {
             // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "test", "good",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good",
                 "bad", (short) 3, "not bad");
 
             // when
@@ -63,7 +57,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("stageId가 null이면 400 상태를 반환한다.")
         void create_nullStageId_badRequest() {
             // given
-            final CreateRetrospectRequest request = new CreateRetrospectRequest(null, "test", "good",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good",
                 "bad", (short) 3, "not bad");
 
             // when
@@ -85,8 +79,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("stageId가 유효하지 않으면 400 상태를 반환한다.")
         void create_invalidStageId_badRequest() {
             // given
-            final long invalidStageId = 1_000_000;
-            final CreateRetrospectRequest request = new CreateRetrospectRequest(invalidStageId, "test", "good",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good",
                 "bad", (short) 3, "not bad");
 
             // when
@@ -108,8 +101,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("content가 공백이면 400 상태를 반환한다.")
         void create_blankContent_badRequest() {
             // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "", "good",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest("", "good",
                 "bad", (short) 3, "not bad");
 
             // when
@@ -132,8 +124,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("score가 1이상 5이하의 정수가 아니면 400 상태를 반환한다.")
         void create_invalidScore_badRequest(final short score) {
             // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "test", "good",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good",
                 "bad", score, "not bad");
 
             // when
