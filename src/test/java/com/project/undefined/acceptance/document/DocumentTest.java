@@ -9,6 +9,8 @@ import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.document.dto.request.CreateDocumentRequest;
+import com.project.undefined.document.dto.response.DocumentResponse;
+import com.project.undefined.document.entity.Document;
 import com.project.undefined.document.repository.DocumentRepository;
 import com.project.undefined.job.entity.Job;
 import com.project.undefined.job.repository.JobRepository;
@@ -119,6 +121,48 @@ public class DocumentTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
             assertThat(error.getMessage()).isEqualTo("content 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
+        }
+    }
+
+    @Nested
+    class get {
+
+        @Test
+        @DisplayName("id로 Document 상세 정보를 조회한다.")
+        void get_ok() {
+            // given
+            final Long documentId = DataUtils.findAnyId(documentRepository, Document::getId);
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/documents/" + documentId)
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            final DocumentResponse document = RestAssuredUtils.extract(response, DocumentResponse.class);
+            assertThat(document.getId()).isEqualTo(documentId);
+        }
+
+        @Test
+        @DisplayName("id로 Document 상세 정보를 조회한다.")
+        void get_invalidId_badRequest() {
+            // given
+            final long invalidDocumentId = 1_000_000;
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/documents/" + invalidDocumentId)
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+            assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_DOCUMENT.getMessage());
         }
     }
 }
