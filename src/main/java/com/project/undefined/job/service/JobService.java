@@ -37,6 +37,12 @@ public class JobService {
         return JobResponse.from(job);
     }
 
+    public void validate(final Long id) {
+        if (!jobRepository.existsById(id)) {
+            throw new JobException(ErrorCode.NON_MATCH_JOB);
+        }
+    }
+
     Job getOne(final Long id) {
         return jobRepository.findById(id)
             .orElseThrow(() -> new JobException(ErrorCode.NON_MATCH_JOB));
