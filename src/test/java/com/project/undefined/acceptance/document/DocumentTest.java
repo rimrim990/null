@@ -17,6 +17,8 @@ import com.project.undefined.job.repository.JobRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
+import java.util.Objects;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -191,9 +193,9 @@ public class DocumentTest extends AcceptanceTest {
 
         @Test
         @DisplayName("jobId와 연관된 Document가 없으면 빈 결과를 반환한다")
-        void getRelated__emptyDocument_ok() {
+        void getRelated_emptyDocument_ok() {
             // given
-            final long jobId = 1_000_000L;
+            final Long jobId = selectNotRelatedJobId();
 
             // when
             final ExtractableResponse<Response> response = given().log().all()
@@ -203,7 +205,7 @@ public class DocumentTest extends AcceptanceTest {
                 .extract();
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
             assertThat(response.response().asString()).isEqualTo("{}");
         }
 
@@ -225,5 +227,20 @@ public class DocumentTest extends AcceptanceTest {
             final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
             assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_JOB.getMessage());
         }
+    }
+
+    private Long selectNotRelatedJobId() {
+        List<Long> relatedJobIds = documentRepository.findAll()
+            .stream()
+            .map(Document::getJobId)
+            .filter(Objects::nonNull)
+            .toList();
+
+        return jobRepository.findAll()
+            .stream()
+            .map(Job::getId)
+            .filter(jobId -> !relatedJobIds.contains(jobId))
+            .findAny()
+            .get();
     }
 }
