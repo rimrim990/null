@@ -165,4 +165,65 @@ public class DocumentTest extends AcceptanceTest {
             assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_DOCUMENT.getMessage());
         }
     }
+
+    @Nested
+    class getRelated {
+
+        @Test
+        @DisplayName("jobId와 연관된 Document를 조회한다.")
+        void getRelated_ok() {
+            // given
+            final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
+            final Long documentId = 1L;
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/documents/related/" + jobId)
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            final DocumentResponse document = RestAssuredUtils.extract(response, DocumentResponse.class);
+            assertThat(document.getId()).isEqualTo(documentId);
+        }
+
+        @Test
+        @DisplayName("jobId와 연관된 Document가 없으면 빈 결과를 반환한다")
+        void getRelated__emptyDocument_ok() {
+            // given
+            final long jobId = 1_000_000L;
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/documents/related/" + jobId)
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            assertThat(response.response().asString()).isEqualTo("{}");
+        }
+
+        @Test
+        @DisplayName("jobId가 유효하지 않으면 400 상태를 반환한다.")
+        void getRelated_invalidJobId_badRequest() {
+            // given
+            final long jobId = 1_000_000L;
+
+            // when
+            final ExtractableResponse<Response> response = given().log().all()
+                .when()
+                .get("/documents/related/" + jobId)
+                .then().log().all()
+                .extract();
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
+            assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_JOB.getMessage());
+        }
+    }
 }

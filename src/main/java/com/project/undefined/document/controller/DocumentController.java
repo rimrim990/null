@@ -30,6 +30,11 @@ public class DocumentController {
             .build();
     }
 
+    @GetMapping("/related/{jobId}")
+    public DocumentResponse getRelated(@PathVariable final Long jobId) {
+        return null;
+    }
+
     @GetMapping("/{id}")
     public DocumentResponse get(@PathVariable final Long id) {
         return documentService.get(id);
