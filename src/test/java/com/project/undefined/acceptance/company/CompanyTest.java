@@ -9,12 +9,12 @@ import com.project.undefined.acceptance.utils.RestAssuredUtils;
 import com.project.undefined.common.dto.response.ErrorResponse;
 import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.company.dto.request.CreateCompanyRequest;
+import com.project.undefined.company.dto.response.CompanyResponse;
 import com.project.undefined.company.entity.Company;
 import com.project.undefined.company.repository.CompanyRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -91,7 +91,7 @@ public class CompanyTest extends AcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            final Company company = RestAssuredUtils.extract(response, Company.class);
+            final CompanyResponse company = RestAssuredUtils.extract(response, CompanyResponse.class);
             assertThat(company.getId()).isEqualTo(companyId);
         }
     }
@@ -166,10 +166,7 @@ public class CompanyTest extends AcceptanceTest {
         @DisplayName("name이 공백이면 400 상태를 반환한다")
         void create_blankName_statue400() {
             // given
-            final HashMap<String, Object> request = new HashMap<>();
-            request.put("name", "");
-            request.put("series", "A");
-            request.put("region", "Seoul");
+            final CreateCompanyRequest request = new CreateCompanyRequest("", "A", "Seoul");
 
             // when
             final ExtractableResponse<Response> response = given().log().all()
