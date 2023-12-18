@@ -6,7 +6,7 @@ import com.project.undefined.document.dto.response.DocumentResponse;
 import com.project.undefined.document.service.DocumentService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,11 +34,11 @@ public class DocumentController {
 
     @GetMapping("/related/{jobId}")
     public ResponseEntity<?> getRelated(@PathVariable final Long jobId) {
-        final DocumentResponse documentResponse = documentService.getRelated(jobId);
-        if (Objects.isNull(documentResponse)) {
+        final Optional<DocumentResponse> response = documentService.getRelated(jobId);
+        if (response.isEmpty()) {
             return ResponseEntity.ok(new EmptyResponse());
         }
-        return ResponseEntity.ok(documentResponse);
+        return ResponseEntity.ok(response.get());
     }
 
     @GetMapping("/{id}")

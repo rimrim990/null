@@ -7,6 +7,7 @@ import com.project.undefined.document.dto.response.DocumentResponse;
 import com.project.undefined.document.entity.Document;
 import com.project.undefined.document.repository.DocumentRepository;
 import com.project.undefined.job.service.JobService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,12 +31,11 @@ public class DocumentService {
         return DocumentResponse.from(document);
     }
 
-    public DocumentResponse getRelated(final Long jobId) {
+    public Optional<DocumentResponse> getRelated(final Long jobId) {
         jobService.validate(jobId);
 
         return documentRepository.findByJobId(jobId)
-            .map(DocumentResponse::from)
-            .orElse(null);
+            .map(DocumentResponse::from);
     }
 
     private Document getOne(final Long id) {
