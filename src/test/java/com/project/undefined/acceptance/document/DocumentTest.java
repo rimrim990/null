@@ -175,8 +175,8 @@ public class DocumentTest extends AcceptanceTest {
         @DisplayName("jobId와 연관된 Document를 조회한다.")
         void getRelated_ok() {
             // given
-            final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
-            final Long documentId = 1L;
+            final Document document = DataUtils.findAny(documentRepository);
+            final Long jobId = document.getJobId();
 
             // when
             final ExtractableResponse<Response> response = given().log().all()
@@ -187,8 +187,8 @@ public class DocumentTest extends AcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            final DocumentResponse document = RestAssuredUtils.extract(response, DocumentResponse.class);
-            assertThat(document.getId()).isEqualTo(documentId);
+            final DocumentResponse result = RestAssuredUtils.extract(response, DocumentResponse.class);
+            assertThat(result.getId()).isEqualTo(document.getId());
         }
 
         @Test
