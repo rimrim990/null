@@ -149,7 +149,7 @@ public class DocumentTest extends AcceptanceTest {
         }
 
         @Test
-        @DisplayName("id로 Document 상세 정보를 조회한다.")
+        @DisplayName("id가 유효하지 않으면 400 상태를 반환한다.")
         void get_invalidId_badRequest() {
             // given
             final long invalidDocumentId = 1_000_000;
