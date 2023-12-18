@@ -30,6 +30,14 @@ public class DocumentService {
         return DocumentResponse.from(document);
     }
 
+    public DocumentResponse getRelated(final Long jobId) {
+        jobService.validate(jobId);
+
+        return documentRepository.findByJobId(jobId)
+            .map(DocumentResponse::from)
+            .orElse(null);
+    }
+
     private Document getOne(final Long id) {
         return documentRepository.findById(id)
             .orElseThrow(() -> new DocumentException(ErrorCode.NON_MATCH_DOCUMENT));
