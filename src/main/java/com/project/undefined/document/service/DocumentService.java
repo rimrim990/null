@@ -1,5 +1,7 @@
 package com.project.undefined.document.service;
 
+import com.project.undefined.common.exception.DocumentException;
+import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.document.dto.request.CreateDocumentRequest;
 import com.project.undefined.document.dto.response.DocumentResponse;
 import com.project.undefined.document.entity.Document;
@@ -21,5 +23,15 @@ public class DocumentService {
         Document document = Document.of(request.getJobId(), request.getContent());
         documentRepository.save(document);
         return DocumentResponse.from(document);
+    }
+
+    public DocumentResponse get(final Long id) {
+        final Document document = getOne(id);
+        return DocumentResponse.from(document);
+    }
+
+    private Document getOne(final Long id) {
+        return documentRepository.findById(id)
+            .orElseThrow(() -> new DocumentException(ErrorCode.NON_MATCH_DOCUMENT));
     }
 }
