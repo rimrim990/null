@@ -9,7 +9,7 @@ import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,11 +47,11 @@ public class StageController {
 
     @GetMapping("/{id}/retrospects")
     public ResponseEntity<?> getRelatedRetrospects(@PathVariable final Long id) {
-       final RetrospectResponse retrospectResponse = stageService.getRelatedRetrospect(id);
-       if (Objects.isNull(retrospectResponse)) {
+       final Optional<RetrospectResponse> response = stageService.getRelatedRetrospect(id);
+       if (response.isEmpty()) {
            return ResponseEntity.ok(new EmptyResponse());
        }
-       return ResponseEntity.ok(retrospectResponse);
+       return ResponseEntity.ok(response.get());
     }
 
     @GetMapping("/{id}")

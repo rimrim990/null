@@ -19,3 +19,6 @@ insert into stage(job_id, name, state, created_at, last_modified_at)
     select id, '1차 면접', 'WAIT', now(), now() from job;
 
 update stage set retrospect_id = (select id from retrospect limit 1) limit 1;
+
+insert into document(job_id, content, created_at, last_modified_at)
+    select id, '아주 멋진 입사지원서와 자기 소개서', now(), now() from job limit 2;

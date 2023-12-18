@@ -13,6 +13,7 @@ import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.service.RetrospectService;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -51,14 +52,14 @@ public class StageService {
             .toList();
     }
 
-    public RetrospectResponse getRelatedRetrospect(final Long id) {
+    public Optional<RetrospectResponse> getRelatedRetrospect(final Long id) {
         final Stage stage = getOne(id);
-        RetrospectResponse retrospect = null;
 
         if (stage.hasAttachedRetrospect()) {
-            retrospect = retrospectService.get(stage.getRetrospectId());
+            final RetrospectResponse response = retrospectService.get(stage.getRetrospectId());
+            return Optional.of(response);
         }
-        return retrospect;
+        return Optional.empty();
     }
 
     public StageResponse updateState(final Long id, final UpdateStageRequest request) {
