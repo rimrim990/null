@@ -1,14 +1,11 @@
-package com.project.undefined.job.entity;
+package com.project.undefined.document.entity;
 
 import com.project.undefined.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.Getter;
 
 @Getter
@@ -20,9 +17,8 @@ public class Document extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id")
-    private Job job;
+    @Column
+    private Long job_id;
 
     @Column(nullable = false)
     private String content;
