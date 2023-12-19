@@ -17,7 +17,6 @@ import com.project.undefined.job.entity.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
-import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.repository.RetrospectRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
@@ -118,7 +117,7 @@ public class StageTest extends AcceptanceTest {
         void createRelatedRetrospect_created() {
             // given
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "test", "good", "bad",
                 (short) 3, "not bad");
 
             // when
@@ -141,7 +140,7 @@ public class StageTest extends AcceptanceTest {
         void createRelatedRetrospect_invalidStageId_badRequest() {
             // given
             final long invalidStageId = 1_000_000;
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest(invalidStageId, "test", "good", "bad",
                 (short) 3, "not bad");
 
             // when
@@ -164,7 +163,7 @@ public class StageTest extends AcceptanceTest {
         void createRelatedRetrospect_blankContent_badRequest() {
             // given
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("", "good", "bad",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "", "good", "bad",
                 (short) 3, "not bad");
 
             // when
@@ -188,7 +187,7 @@ public class StageTest extends AcceptanceTest {
         void createRelatedRetrospect_invalidScore_badRequest(final short score) {
             // given
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
+            final CreateRetrospectRequest request = new CreateRetrospectRequest(stageId, "test", "good", "bad",
                 score, "not bad");
 
             // when
@@ -251,45 +250,6 @@ public class StageTest extends AcceptanceTest {
 
     @Nested
     class getRelatedRetrospect {
-
-        @Test
-        @DisplayName("id와 연관된 Retrospect를 조회한다")
-        void getRelatedRetrospect_ok() {
-            // given
-            final Stage stage = DataUtils.findAny(stageRepository);
-            final Long relatedRetrospectId = stage.getRetrospectId();
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .get("/stages/" + stage.getId()+ "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            final Long resultRetrospectId = RestAssuredUtils.extract(response, RetrospectResponse.class)
-                .getId();
-            assertThat(resultRetrospectId).isEqualTo(relatedRetrospectId);
-        }
-
-        @Test
-        @DisplayName("id와 연관된 Retrospect가 없으면 빈 결과를 반환한다")
-        void getRelatedRetrospect_emptyRetrospect_ok() {
-            // given
-            final Long stageId = selectNotAttachedStageId();
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .get("/stages/" + stageId+ "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.response().asString()).isEqualTo("{}");
-        }
 
         @Test
         @DisplayName("id와 연관된 Stage가 없으면 400 상태를 반환한다")
@@ -383,14 +343,5 @@ public class StageTest extends AcceptanceTest {
             final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
             assertThat(error.getMessage()).isEqualTo("state 필드에 유효한 값을 입력해야 합니다.");
         }
-    }
-
-    private Long selectNotAttachedStageId() {
-        return stageRepository.findAll()
-            .stream()
-            .filter(stage -> !stage.hasAttachedRetrospect())
-            .map(Stage::getId)
-            .findAny()
-            .get();
     }
 }

@@ -1,15 +1,14 @@
 package com.project.undefined.job.controller;
 
-import com.project.undefined.common.dto.response.EmptyResponse;
 import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.service.StageService;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
+import com.project.undefined.retrospect.service.RetrospectService;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class StageController {
 
     private final StageService stageService;
+    private final RetrospectService retrospectService;
 
     @PostMapping("/")
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateStageRequest request) {
@@ -39,7 +39,7 @@ public class StageController {
     @PostMapping("/{id}/retrospects")
     public ResponseEntity<Void> createdRelatedRetrospect(@PathVariable final Long id,
             @Valid @RequestBody final CreateRetrospectRequest request) {
-        final RetrospectResponse retrospectResponse = stageService.attachRetrospect(id, request);
+        final RetrospectResponse retrospectResponse = retrospectService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/retrospects/" + retrospectResponse.getId()))
             .build();
@@ -47,11 +47,7 @@ public class StageController {
 
     @GetMapping("/{id}/retrospects")
     public ResponseEntity<?> getRelatedRetrospects(@PathVariable final Long id) {
-       final Optional<RetrospectResponse> response = stageService.getRelatedRetrospect(id);
-       if (response.isEmpty()) {
-           return ResponseEntity.ok(new EmptyResponse());
-       }
-       return ResponseEntity.ok(response.get());
+       return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
