@@ -17,6 +17,7 @@ import com.project.undefined.retrospect.repository.RetrospectRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -199,7 +200,7 @@ public class RetrospectTest extends AcceptanceTest {
         @DisplayName("stageId와 연관된 Retrospect가 존재하지 않으면 빈 결과를 반환한다")
         void getRelated_emptyResult_ok() {
             // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
+            final Long stageId = getNotRelatedStageId();
 
             // when
             final ExtractableResponse<Response> response = given().log().all()
@@ -233,5 +234,18 @@ public class RetrospectTest extends AcceptanceTest {
         }
     }
 
+    private Long getNotRelatedStageId() {
+        final List<Long> relatedStageId = retrospectRepository.findAll()
+            .stream()
+            .map(Retrospect::getStageId)
+            .toList();
 
+        return stageRepository.findAll()
+            .stream()
+            .map(Stage::getId)
+            .filter(stageId -> !relatedStageId.contains(stageId))
+            .findAny()
+            .get();
+
+    }
 }
