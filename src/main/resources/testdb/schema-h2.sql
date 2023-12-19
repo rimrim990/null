@@ -33,6 +33,7 @@ create table if not exists job
 create table if not exists retrospect
 (
     id               bigint       not null auto_increment,
+    stage_id           bigint,
     content          varchar(255) not null,
     good_point       varchar(255) not null,
     bad_point        varchar(255) not null,
@@ -47,7 +48,6 @@ create table if not exists stage
 (
     id               bigint       not null auto_increment,
     job_id           bigint,
-    retrospect_id    bigint,
     name             varchar(255) not null,
     state            varchar(255) not null,
     created_at       timestamp    not null,
@@ -64,5 +64,5 @@ alter table job
 alter table stage
     add foreign key (job_id) references job (id);
 
-alter table stage
-    add foreign key (retrospect_id) references retrospect (id);
+alter table retrospect
+    add foreign key (stage_id) references stage (id);
