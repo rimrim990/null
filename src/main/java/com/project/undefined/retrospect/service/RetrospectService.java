@@ -2,6 +2,7 @@ package com.project.undefined.retrospect.service;
 
 import com.project.undefined.common.exception.ErrorCode;
 import com.project.undefined.common.exception.RetrospectException;
+import com.project.undefined.job.service.StageService;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.entity.Retrospect;
@@ -14,9 +15,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class RetrospectService {
 
+    private final StageService stageService;
     private final RetrospectRepository retrospectRepository;
 
-    public RetrospectResponse create(final CreateRetrospectRequest request) {
+    public RetrospectResponse create(final Long stageId, final CreateRetrospectRequest request) {
+        stageService.validate(stageId);
+
         final Retrospect retrospect = mapFrom(request);
         retrospectRepository.save(retrospect);
         return RetrospectResponse.from(retrospect);

@@ -46,6 +46,12 @@ public class StageService {
         return StageResponse.from(stage);
     }
 
+    public void validate(final Long id) {
+        if (!stageRepository.existsById(id)) {
+            throw new StageException(ErrorCode.NON_MATCH_STAGE);
+        }
+    }
+
     private Stage getOne(final Long id) {
         return stageRepository.findById(id)
             .orElseThrow(() -> new StageException(ErrorCode.NON_MATCH_STAGE));
