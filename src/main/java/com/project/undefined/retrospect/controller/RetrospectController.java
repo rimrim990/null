@@ -1,10 +1,12 @@
 package com.project.undefined.retrospect.controller;
 
+import com.project.undefined.common.dto.response.EmptyResponse;
 import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
 import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.service.RetrospectService;
 import jakarta.validation.Valid;
 import java.net.URI;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +36,14 @@ public class RetrospectController {
     @GetMapping("/{id}")
     public RetrospectResponse get(@PathVariable final Long id) {
         return retrospectService.get(id);
+    }
+
+    @GetMapping("/related/{stageId}")
+    public ResponseEntity<?> getRelated(@PathVariable final Long stageId) {
+        Optional<RetrospectResponse> result = retrospectService.getRelated(stageId);
+        if (result.isEmpty()) {
+            return ResponseEntity.ok(new EmptyResponse());
+        }
+        return ResponseEntity.ok(result.get());
     }
 }

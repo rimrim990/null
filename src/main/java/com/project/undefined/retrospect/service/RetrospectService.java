@@ -8,6 +8,7 @@ import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import com.project.undefined.retrospect.entity.Retrospect;
 import com.project.undefined.retrospect.entity.Score;
 import com.project.undefined.retrospect.repository.RetrospectRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,13 @@ public class RetrospectService {
     public RetrospectResponse get(final Long id) {
         final Retrospect retrospect = getOne(id);
         return RetrospectResponse.from(retrospect);
+    }
+
+    public Optional<RetrospectResponse> getRelated(final Long stageId) {
+        stageService.validate(stageId);
+
+        return retrospectRepository.findByStageId(stageId)
+            .map(RetrospectResponse::from);
     }
 
     private Retrospect getOne(final Long id) {
