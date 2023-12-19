@@ -50,7 +50,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -71,7 +71,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -93,7 +93,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -115,7 +115,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 

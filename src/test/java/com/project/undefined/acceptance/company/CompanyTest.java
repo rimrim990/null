@@ -40,7 +40,7 @@ public class CompanyTest extends AcceptanceTest {
             // when
             final ExtractableResponse<Response> response = given().log().all()
                 .when()
-                .get("/companies/")
+                .get("/companies")
                 .then().log().all()
                 .extract();
 
@@ -110,7 +110,7 @@ public class CompanyTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/companies/")
+                .post("/companies")
                 .then().log().all()
                 .extract();
 
@@ -131,7 +131,7 @@ public class CompanyTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/companies/")
+                .post("/companies")
                 .then().log().all()
                 .extract();
 
@@ -152,7 +152,7 @@ public class CompanyTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/companies/")
+                .post("/companies")
                 .then().log().all()
                 .extract();
 
@@ -173,7 +173,7 @@ public class CompanyTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/companies/")
+                .post("/companies")
                 .then().log().all()
                 .extract();
 

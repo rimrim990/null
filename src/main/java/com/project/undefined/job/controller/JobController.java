@@ -26,7 +26,7 @@ public class JobController {
     private final JobService jobService;
     private final StageService stageService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateJobRequest request) {
         final JobResponse jobResponse = jobService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -34,7 +34,7 @@ public class JobController {
             .build();
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<JobResponse> getAll() {
         return jobService.getAll();
     }

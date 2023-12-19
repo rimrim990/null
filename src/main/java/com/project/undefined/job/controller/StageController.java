@@ -24,7 +24,7 @@ public class StageController {
 
     private final StageService stageService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateStageRequest request) {
         final StageResponse stageResponse = stageService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())

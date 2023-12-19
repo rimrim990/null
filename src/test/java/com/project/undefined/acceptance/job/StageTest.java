@@ -49,7 +49,7 @@ public class StageTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 
@@ -71,7 +71,7 @@ public class StageTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 
@@ -92,7 +92,7 @@ public class StageTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 

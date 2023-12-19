@@ -54,7 +54,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -76,7 +76,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -97,7 +97,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -118,7 +118,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -141,7 +141,7 @@ public class JobTest extends AcceptanceTest {
             // when
             final ExtractableResponse<Response> response = given().log().all()
                 .when()
-                .get("/jobs/")
+                .get("/jobs")
                 .then().log().all()
                 .extract();
 
