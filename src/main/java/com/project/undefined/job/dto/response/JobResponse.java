@@ -10,14 +10,14 @@ import lombok.Getter;
 public class JobResponse {
 
     private Long id;
-    private String company;
+    private Long companyId;
     private String position;
     private List<String> stages;
 
     public static JobResponse from(final Job job) {
         return new JobResponse(
             job.getId(),
-            "company",
+            job.getCompanyId(),
             job.getPosition(),
             List.of()
         );
