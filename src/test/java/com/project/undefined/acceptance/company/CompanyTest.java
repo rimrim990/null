@@ -2,6 +2,7 @@ package com.project.undefined.acceptance.company;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -38,7 +39,8 @@ public class CompanyTest extends AcceptanceTest {
             final List<Long> companyIds = DataUtils.findAllIds(companyRepository, Company::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .get("/companies")
                 .then().log().all()
@@ -64,7 +66,8 @@ public class CompanyTest extends AcceptanceTest {
             long invalidCompanyId = 10_000_000L;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .get("/companies/" + invalidCompanyId)
                 .then().log().all()
@@ -83,7 +86,8 @@ public class CompanyTest extends AcceptanceTest {
             Long companyId = DataUtils.findAnyId(companyRepository, Company::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .get("/companies/" + companyId)
                 .then().log().all()
@@ -106,7 +110,8 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("test", "B", "SEOUL");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -127,7 +132,8 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("test", "invalid", "SEOUL");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -148,7 +154,8 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("test", "A", "invalid");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -169,7 +176,8 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("", "A", "Seoul");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)

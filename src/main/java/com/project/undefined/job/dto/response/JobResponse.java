@@ -12,7 +12,7 @@ public class JobResponse {
     private Long id;
     private Long companyId;
     private String position;
-    private List<String> stages;
+    private List<Long> stageIds;
 
     public static JobResponse from(final Job job) {
         return new JobResponse(

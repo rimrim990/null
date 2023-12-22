@@ -2,6 +2,7 @@ package com.project.undefined.acceptance.job;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -45,7 +46,8 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(jobId, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -67,7 +69,8 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(jobId, "");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -88,7 +91,8 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(null, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -113,7 +117,8 @@ public class StageTest extends AcceptanceTest {
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .get("/stages/" + stageId)
                 .then().log().all()
@@ -132,7 +137,8 @@ public class StageTest extends AcceptanceTest {
             final long notExistStageId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .get("/stages/" + notExistStageId)
                 .then().log().all()
@@ -156,7 +162,8 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -180,7 +187,8 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -203,7 +211,8 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest("invalidState");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)

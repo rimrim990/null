@@ -2,6 +2,7 @@ package com.project.undefined.acceptance.document;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -46,7 +47,8 @@ public class DocumentTest extends AcceptanceTest {
             final CreateDocumentRequest request = new CreateDocumentRequest(jobId, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -67,7 +69,8 @@ public class DocumentTest extends AcceptanceTest {
             final CreateDocumentRequest request = new CreateDocumentRequest(null, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -89,7 +92,8 @@ public class DocumentTest extends AcceptanceTest {
             final CreateDocumentRequest request = new CreateDocumentRequest(invalidJobId, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -111,7 +115,8 @@ public class DocumentTest extends AcceptanceTest {
             final CreateDocumentRequest request = new CreateDocumentRequest(jobId, "");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -136,7 +141,8 @@ public class DocumentTest extends AcceptanceTest {
             final Long documentId = DataUtils.findAnyId(documentRepository, Document::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .get("/documents/" + documentId)
                 .then().log().all()
@@ -155,7 +161,8 @@ public class DocumentTest extends AcceptanceTest {
             final long invalidDocumentId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .get("/documents/" + invalidDocumentId)
                 .then().log().all()
@@ -179,7 +186,8 @@ public class DocumentTest extends AcceptanceTest {
             final Long jobId = document.getJobId();
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .get("/documents/related/" + jobId)
                 .then().log().all()
@@ -198,7 +206,8 @@ public class DocumentTest extends AcceptanceTest {
             final Long jobId = selectNotRelatedJobId();
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .get("/documents/related/" + jobId)
                 .then().log().all()
@@ -216,7 +225,8 @@ public class DocumentTest extends AcceptanceTest {
             final long jobId = 1_000_000L;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document"))
                 .when()
                 .get("/documents/related/" + jobId)
                 .then().log().all()

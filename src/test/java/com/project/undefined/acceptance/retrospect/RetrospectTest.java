@@ -2,6 +2,7 @@ package com.project.undefined.acceptance.retrospect;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -184,7 +185,8 @@ public class RetrospectTest extends AcceptanceTest {
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("retrospect"))
                 .when()
                 .get("/retrospects/related/" + stageId)
                 .then().log().all()
@@ -203,7 +205,8 @@ public class RetrospectTest extends AcceptanceTest {
             final Long stageId = getNotRelatedStageId();
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("retrospect"))
                 .when()
                 .get("/retrospects/related/" + stageId)
                 .then().log().all()
@@ -221,7 +224,8 @@ public class RetrospectTest extends AcceptanceTest {
             final long invalidStageId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("retrospect"))
                 .when()
                 .get("/retrospects/related/" + invalidStageId)
                 .then().log().all()

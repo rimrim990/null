@@ -2,6 +2,7 @@ package com.project.undefined.acceptance.job;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -139,7 +140,8 @@ public class JobTest extends AcceptanceTest {
             final List<Long> jobIds = DataUtils.findAllIds(jobRepository, Job::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job"))
                 .when()
                 .get("/jobs")
                 .then().log().all()
@@ -208,7 +210,8 @@ public class JobTest extends AcceptanceTest {
             final List<Long> relatedStageIds = findRelatedStageIds(job);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job"))
                 .when()
                 .get("/jobs/" + job.getId() + "/stages")
                 .then().log().all()
@@ -231,7 +234,8 @@ public class JobTest extends AcceptanceTest {
             final long notExistJobId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job"))
                 .when()
                 .get("/jobs/" + notExistJobId + "/stages")
                 .then().log().all()
