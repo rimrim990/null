@@ -3,6 +3,9 @@ plugins {
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'jacoco'
+
+    // apply the asciidoctor plugin
+    id "org.asciidoctor.jvm.convert" version '3.3.2'
 }
 
 group = 'com.project'
@@ -68,6 +71,8 @@ java {
 }
 
 configurations {
+    asciidoctorExt
+
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -78,6 +83,9 @@ repositories {
 }
 
 dependencies {
+    asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+    testImplementation 'org.springframework.restdocs:spring-restdocs-restassured'
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -90,6 +98,27 @@ dependencies {
     testImplementation 'io.rest-assured:rest-assured'
 }
 
+ext {
+    // define output locations for generated snippets
+    snippetsDir = file('build/generated-snippets')
+}
+
+// generate documents before building jar
+asciidoctor {
+    configurations "asciidoctorExt"
+    inputs.dir snippetsDir
+    dependsOn test
+}
+
+// copy documents to jar directory
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}/html5") {
+        into 'static/docs'
+    }
+}
+
 tasks.named('test') {
+    outputs.dir snippetsDir
     useJUnitPlatform()
 }
