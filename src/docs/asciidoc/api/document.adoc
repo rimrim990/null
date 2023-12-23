@@ -1,0 +1,19 @@
+== Document API
+
+=== create
+.http-request
+include::{snippets}/document/create/http-request.adoc[]
+.http-response
+include::{snippets}/document/create/http-response.adoc[]
+.request-fields
+include::{snippets}/document/create/request-fields.adoc[]
+
+=== get
+.http-request
+include::{snippets}/document/get/http-request.adoc[]
+.http-response
+include::{snippets}/document/get/http-response.adoc[]
+.path-parameters
+include::{snippets}/document/get/path-parameters.adoc[]
+.request-fields
+include::{snippets}/document/get/response-fields.adoc[]

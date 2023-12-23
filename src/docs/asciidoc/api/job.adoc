@@ -1,0 +1,35 @@
+== Job API
+
+=== create
+.http-request
+include::{snippets}/job/create/http-request.adoc[]
+.http-response
+include::{snippets}/job/create/http-response.adoc[]
+.request-fields
+include::{snippets}/job/create/request-fields.adoc[]
+
+=== get
+.http-request
+include::{snippets}/job/get/http-request.adoc[]
+.http-response
+include::{snippets}/job/get/http-response.adoc[]
+.path-parameters
+include::{snippets}/job/get/path-parameters.adoc[]
+.response-fields
+include::{snippets}/job/get/response-fields.adoc[]
+
+=== getAll
+.http-request
+include::{snippets}/job/getAll/http-request.adoc[]
+.http-response
+include::{snippets}/job/getAll/http-response.adoc[]
+.response-fields
+include::{snippets}/job/getAll/response-fields.adoc[]
+
+=== getRelatedStages
+.http-request
+include::{snippets}/job/getRelatedStages/http-request.adoc[]
+.http-response
+include::{snippets}/job/getRelatedStages/http-response.adoc[]
+.response-fields
+include::{snippets}/job/getRelatedStages/response-fields.adoc[]

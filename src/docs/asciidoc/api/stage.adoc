@@ -1,0 +1,32 @@
+== Stage API
+
+=== create
+.http-request
+include::{snippets}/stage/create/http-request.adoc[]
+.http-response
+include::{snippets}/stage/create/http-response.adoc[]
+.request-fields
+include::{snippets}/stage/create/request-fields.adoc[]
+
+
+=== get
+.http-request
+include::{snippets}/stage/get/http-request.adoc[]
+.http-response
+include::{snippets}/stage/get/http-response.adoc[]
+.path-parameters
+include::{snippets}/stage/get/path-parameters.adoc[]
+.response-fields
+include::{snippets}/stage/get/response-fields.adoc[]
+
+=== updateState
+.http-request
+include::{snippets}/stage/updateState/http-request.adoc[]
+.http-response
+include::{snippets}/stage/updateState/http-response.adoc[]
+.path-parameters
+include::{snippets}/stage/updateState/path-parameters.adoc[]
+.request-fields
+include::{snippets}/stage/updateState/request-fields.adoc[]
+.response-fields
+include::{snippets}/stage/updateState/response-fields.adoc[]

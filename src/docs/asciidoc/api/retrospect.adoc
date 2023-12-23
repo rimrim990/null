@@ -1,0 +1,29 @@
+== Retrospect API
+
+=== create
+.http-request
+include::{snippets}/retrospect/create/http-request.adoc[]
+.http-response
+include::{snippets}/retrospect/create/http-response.adoc[]
+.path-parameters
+include::{snippets}/retrospect/create/path-parameters.adoc[]
+.request-fields
+include::{snippets}/retrospect/create/request-fields.adoc[]
+
+=== get
+.http-request
+include::{snippets}/retrospect/get/http-request.adoc[]
+.http-response
+include::{snippets}/retrospect/get/http-response.adoc[]
+.response-fields
+include::{snippets}/retrospect/get/response-fields.adoc[]
+
+=== getRelated
+.http-request
+include::{snippets}/retrospect/getRelated/http-request.adoc[]
+.http-response
+include::{snippets}/retrospect/getRelated/http-response.adoc[]
+.path-parameters
+include::{snippets}/retrospect/getRelated/path-parameters.adoc[]
+.response-fields
+include::{snippets}/retrospect/getRelated/response-fields.adoc[]
