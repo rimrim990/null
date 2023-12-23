@@ -1,7 +1,14 @@
 package com.project.undefined.acceptance.job;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
@@ -25,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Stage API 인수 테스트")
 public class StageTest extends AcceptanceTest {
@@ -47,7 +55,14 @@ public class StageTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+                .filter(document("stage/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    requestFields(
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -69,8 +84,7 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(jobId, "");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -91,8 +105,7 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(null, "test");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -118,9 +131,20 @@ public class StageTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+                .filter(document("stage/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("id").description("아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    )
+                ))
                 .when()
-                .get("/stages/" + stageId)
+                .get("/stages/{id}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -137,8 +161,7 @@ public class StageTest extends AcceptanceTest {
             final long notExistStageId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .get("/stages/" + notExistStageId)
                 .then().log().all()
@@ -163,11 +186,25 @@ public class StageTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+                .filter(document("stage/updateState",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                      parameterWithName("id").description("아이디")
+                    ),
+                    requestFields(
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .patch("/stages/" + stageId)
+                .patch("/stages/{id}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -187,8 +224,7 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -211,8 +247,7 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest("invalidState");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("stage"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)

@@ -1,7 +1,14 @@
 package com.project.undefined.acceptance.retrospect;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
@@ -26,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Retrospect API 인수 테스트")
 public class RetrospectTest extends AcceptanceTest {
@@ -48,11 +56,25 @@ public class RetrospectTest extends AcceptanceTest {
                 (short) 3, "not bad");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("retrospect/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("stageId").description("stage 아이디")
+                    ),
+                    requestFields(
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+                        fieldWithPath("goodPoint").type(JsonFieldType.STRING).description("잘한점"),
+                        fieldWithPath("badPoint").type(JsonFieldType.STRING).description("아쉬운점"),
+                        fieldWithPath("score").type(JsonFieldType.NUMBER).description("점수"),
+                        fieldWithPath("summary").type(JsonFieldType.STRING).description("요약")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/retrospects/related/" + stageId)
+                .post("/retrospects/related/{stageId}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -143,9 +165,22 @@ public class RetrospectTest extends AcceptanceTest {
             final Long retrospectId = DataUtils.findAnyId(retrospectRepository, Retrospect::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("retrospect/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("stageId").type(JsonFieldType.NUMBER).description("stage 아이디"),
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+                        fieldWithPath("goodPoint").type(JsonFieldType.STRING).description("잘한점"),
+                        fieldWithPath("badPoint").type(JsonFieldType.STRING).description("아쉬운점"),
+                        fieldWithPath("score").type(JsonFieldType.NUMBER).description("점수"),
+                        fieldWithPath("summary").type(JsonFieldType.STRING).description("요약")
+                    )
+                ))
                 .when()
-                .get("/retrospects/" + retrospectId)
+                .get("/retrospects/{id}", retrospectId)
                 .then().log().all()
                 .extract();
 
@@ -186,9 +221,24 @@ public class RetrospectTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("retrospect"))
+                .filter(document("retrospect/getRelated",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("stageId").description("stage 아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("stageId").type(JsonFieldType.NUMBER).description("stage 아이디"),
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용"),
+                        fieldWithPath("goodPoint").type(JsonFieldType.STRING).description("잘한점"),
+                        fieldWithPath("badPoint").type(JsonFieldType.STRING).description("아쉬운점"),
+                        fieldWithPath("score").type(JsonFieldType.NUMBER).description("점수"),
+                        fieldWithPath("summary").type(JsonFieldType.STRING).description("요약")
+                    )
+                ))
                 .when()
-                .get("/retrospects/related/" + stageId)
+                .get("/retrospects/related/{stageId}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -205,8 +255,7 @@ public class RetrospectTest extends AcceptanceTest {
             final Long stageId = getNotRelatedStageId();
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("retrospect"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .get("/retrospects/related/" + stageId)
                 .then().log().all()
@@ -224,8 +273,7 @@ public class RetrospectTest extends AcceptanceTest {
             final long invalidStageId = 1_000_000;
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("retrospect"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .get("/retrospects/related/" + invalidStageId)
                 .then().log().all()

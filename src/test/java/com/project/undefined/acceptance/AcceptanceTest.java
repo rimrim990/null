@@ -39,6 +39,10 @@ public abstract class AcceptanceTest {
         RestAssured.basePath = apiPrefix;
         RestAssured.port = port;
 
+        setUpRestDocs(restDocumentation);
+    }
+
+    private void setUpRestDocs(final RestDocumentationContextProvider restDocumentation) {
         spec = new RequestSpecBuilder()
             .addFilter(RestAssuredRestDocumentation.documentationConfiguration(restDocumentation))
             .build();

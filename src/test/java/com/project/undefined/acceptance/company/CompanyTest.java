@@ -1,7 +1,14 @@
 package com.project.undefined.acceptance.company;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
@@ -22,6 +29,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Company API 인수 테스트")
 public class CompanyTest extends AcceptanceTest {
@@ -40,7 +48,17 @@ public class CompanyTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+                .filter(document("company/getAll",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    responseFields(
+                        fieldWithPath("[]").type(JsonFieldType.ARRAY).description("company 리스트"),
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("[].series").type(JsonFieldType.STRING).description("투자 단계"),
+                        fieldWithPath("[].region").type(JsonFieldType.STRING).description("지역")
+                    )
+                ))
                 .when()
                 .get("/companies")
                 .then().log().all()
@@ -66,8 +84,7 @@ public class CompanyTest extends AcceptanceTest {
             long invalidCompanyId = 10_000_000L;
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .get("/companies/" + invalidCompanyId)
                 .then().log().all()
@@ -87,9 +104,21 @@ public class CompanyTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+                .filter(document("company/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("id").description("아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("series").type(JsonFieldType.STRING).description("투자 단계"),
+                        fieldWithPath("region").type(JsonFieldType.STRING).description("지역")
+                    )
+                ))
                 .when()
-                .get("/companies/" + companyId)
+                .get("/companies/{id}", companyId)
                 .then().log().all()
                 .extract();
 
@@ -111,7 +140,15 @@ public class CompanyTest extends AcceptanceTest {
 
             // when
             final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+                .filter(document("company/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    requestFields(
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("series").type(JsonFieldType.STRING).description("투자 단계"),
+                        fieldWithPath("region").type(JsonFieldType.STRING).description("지역")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -132,8 +169,7 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("test", "invalid", "SEOUL");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -154,8 +190,7 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("test", "A", "invalid");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
@@ -176,8 +211,7 @@ public class CompanyTest extends AcceptanceTest {
             final CreateCompanyRequest request = new CreateCompanyRequest("", "A", "Seoul");
 
             // when
-            final ExtractableResponse<Response> response = given(spec).log().all()
-                .filter(document("company"))
+            final ExtractableResponse<Response> response = given().log().all()
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
