@@ -24,6 +24,9 @@ public class Retrospect extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private Long stageId;
+
     @Column(nullable = false)
     private String content;
 
@@ -41,8 +44,8 @@ public class Retrospect extends BaseEntity {
     private Score score;
 
     @Builder
-    private Retrospect(final String content, final String goodPoint, final String badPoint, final String summary,
-            final Score score) {
-        this(null, content, goodPoint, badPoint, summary, score);
+    private Retrospect(final Long stageId, final String content, final String goodPoint, final String badPoint,
+            final String summary, final Score score) {
+        this(null, stageId, content, goodPoint, badPoint, summary, score);
     }
 }

@@ -1,7 +1,15 @@
 package com.project.undefined.acceptance.job;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -26,6 +34,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Job API 인수 테스트")
 public class JobTest extends AcceptanceTest {
@@ -50,11 +59,19 @@ public class JobTest extends AcceptanceTest {
             final CreateJobRequest request = new CreateJobRequest(companyId, "backend");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    requestFields(
+                        fieldWithPath("companyId").type(JsonFieldType.NUMBER).description("company 아이디"),
+                        fieldWithPath("position").type(JsonFieldType.STRING).description("포지션")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -76,7 +93,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -97,7 +114,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -118,7 +135,7 @@ public class JobTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/jobs/")
+                .post("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -139,9 +156,19 @@ public class JobTest extends AcceptanceTest {
             final List<Long> jobIds = DataUtils.findAllIds(jobRepository, Job::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job/getAll",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    responseFields(
+                        fieldWithPath("[]").type(JsonFieldType.ARRAY).description("job 리스트"),
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("[].companyId").type(JsonFieldType.NUMBER).description("company 아이디"),
+                        fieldWithPath("[].position").type(JsonFieldType.STRING).description("이름")
+                    )
+                ))
                 .when()
-                .get("/jobs/")
+                .get("/jobs")
                 .then().log().all()
                 .extract();
 
@@ -165,9 +192,21 @@ public class JobTest extends AcceptanceTest {
             final Long jobId = DataUtils.findAnyId(jobRepository, Job::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("id").description("아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("companyId").type(JsonFieldType.NUMBER).description("company 아이디"),
+                        fieldWithPath("position").type(JsonFieldType.STRING).description("포지션")
+                    )
+                ))
                 .when()
-                .get("/jobs/" + jobId)
+                .get("/jobs/{id}", + jobId)
                 .then().log().all()
                 .extract();
 
@@ -208,9 +247,20 @@ public class JobTest extends AcceptanceTest {
             final List<Long> relatedStageIds = findRelatedStageIds(job);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("job/getRelatedStages",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    responseFields(
+                        fieldWithPath("[]").type(JsonFieldType.ARRAY).description("stage 리스트"),
+                        fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("[].jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("[].name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("[].state").type(JsonFieldType.STRING).description("상태")
+                    )
+                ))
                 .when()
-                .get("/jobs/" + job.getId() + "/stages")
+                .get("/jobs/{id}/stages", job.getId())
                 .then().log().all()
                 .extract();
 

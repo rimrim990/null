@@ -1,15 +1,11 @@
 package com.project.undefined.job.controller;
 
-import com.project.undefined.common.dto.response.EmptyResponse;
 import com.project.undefined.job.dto.request.CreateStageRequest;
 import com.project.undefined.job.dto.request.UpdateStageRequest;
 import com.project.undefined.job.dto.response.StageResponse;
 import com.project.undefined.job.service.StageService;
-import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
-import com.project.undefined.retrospect.dto.response.RetrospectResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,30 +24,12 @@ public class StageController {
 
     private final StageService stageService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateStageRequest request) {
         final StageResponse stageResponse = stageService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
             .location(URI.create("/stages/" + stageResponse.getId()))
             .build();
-    }
-
-    @PostMapping("/{id}/retrospects")
-    public ResponseEntity<Void> createdRelatedRetrospect(@PathVariable final Long id,
-            @Valid @RequestBody final CreateRetrospectRequest request) {
-        final RetrospectResponse retrospectResponse = stageService.attachRetrospect(id, request);
-        return ResponseEntity.status(HttpStatus.CREATED.value())
-            .location(URI.create("/retrospects/" + retrospectResponse.getId()))
-            .build();
-    }
-
-    @GetMapping("/{id}/retrospects")
-    public ResponseEntity<?> getRelatedRetrospects(@PathVariable final Long id) {
-       final Optional<RetrospectResponse> response = stageService.getRelatedRetrospect(id);
-       if (response.isEmpty()) {
-           return ResponseEntity.ok(new EmptyResponse());
-       }
-       return ResponseEntity.ok(response.get());
     }
 
     @GetMapping("/{id}")

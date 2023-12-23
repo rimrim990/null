@@ -1,0 +1,27 @@
+== Company API
+
+=== create
+.http-request
+include::{snippets}/company/create/http-request.adoc[]
+.http-response
+include::{snippets}/company/create/http-response.adoc[]
+.request-fields
+include::{snippets}/company/create/request-fields.adoc[]
+
+=== get
+.http-request
+include::{snippets}/company/get/http-request.adoc[]
+.http-response
+include::{snippets}/company/get/http-response.adoc[]
+.response-fields
+include::{snippets}/company/get/response-fields.adoc[]
+
+=== getAll
+.http-request
+include::{snippets}/company/getAll/http-request.adoc[]
+.http-response
+include::{snippets}/company/getAll/http-response.adoc[]
+.path-parameters
+include::{snippets}/company/getAll/path-parameters.adoc[]
+.response-fields
+include::{snippets}/company/getAll/response-fields.adoc[]

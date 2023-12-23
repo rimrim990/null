@@ -11,11 +11,11 @@ import lombok.Getter;
 public class StageResponse {
 
     private Long id;
-    private Long retrospectId;
+    private Long jobId;
     private String name;
     private State state;
 
     public static StageResponse from(final Stage stage) {
-        return new StageResponse(stage.getId(), stage.getRetrospectId(), stage.getName(), stage.getState());
+        return new StageResponse(stage.getId(), stage.getJob().getId(), stage.getName(), stage.getState());
     }
 }

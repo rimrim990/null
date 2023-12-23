@@ -23,7 +23,7 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
-    @PostMapping("/")
+    @PostMapping
     public ResponseEntity<Void> create(@Valid @RequestBody final CreateCompanyRequest request) {
         final CompanyResponse response = companyService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED.value())
@@ -31,7 +31,7 @@ public class CompanyController {
             .build();
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<CompanyResponse> getAll() {
         return companyService.getAll();
     }

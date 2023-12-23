@@ -1,7 +1,15 @@
 package com.project.undefined.acceptance.job;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -16,19 +24,15 @@ import com.project.undefined.job.entity.Stage;
 import com.project.undefined.job.entity.State;
 import com.project.undefined.job.repository.JobRepository;
 import com.project.undefined.job.repository.StageRepository;
-import com.project.undefined.retrospect.dto.request.CreateRetrospectRequest;
-import com.project.undefined.retrospect.dto.response.RetrospectResponse;
-import com.project.undefined.retrospect.repository.RetrospectRepository;
 import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Stage API 인수 테스트")
 public class StageTest extends AcceptanceTest {
@@ -38,9 +42,6 @@ public class StageTest extends AcceptanceTest {
 
     @Autowired
     private JobRepository jobRepository;
-
-    @Autowired
-    private RetrospectRepository retrospectRepository;
 
     @Nested
     class create {
@@ -53,11 +54,19 @@ public class StageTest extends AcceptanceTest {
             final CreateStageRequest request = new CreateStageRequest(jobId, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    requestFields(
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 
@@ -79,7 +88,7 @@ public class StageTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 
@@ -100,7 +109,7 @@ public class StageTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/stages/")
+                .post("/stages")
                 .then().log().all()
                 .extract();
 
@@ -108,102 +117,6 @@ public class StageTest extends AcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
             assertThat(error.getMessage()).isEqualTo("jobId 은(는) 필수 입력 값입니다.");
-        }
-    }
-
-    @Nested
-    class createRelatedRetrospect {
-        @Test
-        @DisplayName("Stage에 Retrospect를 생성한다.")
-        void createRelatedRetrospect_created() {
-            // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
-                (short) 3, "not bad");
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .body(request)
-                .contentType(ContentType.JSON)
-                .post("/stages/" + stageId + "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-            final Long retrospectId = RestAssuredUtils.parseLocationId(response, "/retrospects/");
-            assertThat(retrospectRepository.existsById(retrospectId)).isTrue();
-        }
-
-        @Test
-        @DisplayName("stageId가 유효하지 않으면 400 상태를 반환한다.")
-        void createRelatedRetrospect_invalidStageId_badRequest() {
-            // given
-            final long invalidStageId = 1_000_000;
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
-                (short) 3, "not bad");
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .body(request)
-                .contentType(ContentType.JSON)
-                .post("/stages/" + invalidStageId + "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-            assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_STAGE.getMessage());
-        }
-
-        @Test
-        @DisplayName("content가 공백이면 400 상태를 반환한다.")
-        void createRelatedRetrospect_blankContent_badRequest() {
-            // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("", "good", "bad",
-                (short) 3, "not bad");
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .body(request)
-                .contentType(ContentType.JSON)
-                .post("/stages/" + stageId + "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-            assertThat(error.getMessage()).isEqualTo("content 은(는) 필수 입력 값이며 공백을 제외한 문자를 하나 이상 포함해야 합니다.");
-        }
-
-        @ParameterizedTest
-        @ValueSource(shorts = {0, 6})
-        @DisplayName("score가 1이상 5이하의 정수가 아니면 400 상태를 반환한다.")
-        void createRelatedRetrospect_invalidScore_badRequest(final short score) {
-            // given
-            final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
-            final CreateRetrospectRequest request = new CreateRetrospectRequest("test", "good", "bad",
-                score, "not bad");
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .body(request)
-                .contentType(ContentType.JSON)
-                .post("/stages/" + stageId + "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-            assertThat(error.getMessage()).isEqualTo("score 은(는) 5이하 1이상의 값이어야 합니다.");
         }
     }
 
@@ -217,9 +130,22 @@ public class StageTest extends AcceptanceTest {
             final Long stageId = DataUtils.findAnyId(stageRepository, Stage::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("id").description("아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    )
+                ))
                 .when()
-                .get("/stages/" + stageId)
+                .get("/stages/{id}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -250,68 +176,6 @@ public class StageTest extends AcceptanceTest {
     }
 
     @Nested
-    class getRelatedRetrospect {
-
-        @Test
-        @DisplayName("id와 연관된 Retrospect를 조회한다")
-        void getRelatedRetrospect_ok() {
-            // given
-            final Stage stage = DataUtils.findAny(stageRepository);
-            final Long relatedRetrospectId = stage.getRetrospectId();
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .get("/stages/" + stage.getId()+ "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            final Long resultRetrospectId = RestAssuredUtils.extract(response, RetrospectResponse.class)
-                .getId();
-            assertThat(resultRetrospectId).isEqualTo(relatedRetrospectId);
-        }
-
-        @Test
-        @DisplayName("id와 연관된 Retrospect가 없으면 빈 결과를 반환한다")
-        void getRelatedRetrospect_emptyRetrospect_ok() {
-            // given
-            final Long stageId = selectNotAttachedStageId();
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .get("/stages/" + stageId+ "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-            assertThat(response.response().asString()).isEqualTo("{}");
-        }
-
-        @Test
-        @DisplayName("id와 연관된 Stage가 없으면 400 상태를 반환한다")
-        void getRelatedRetrospect_invalidStageId_badRequest() {
-            // given
-            final long invalidStageId = 1_000_000;
-
-            // when
-            final ExtractableResponse<Response> response = given().log().all()
-                .when()
-                .get("/stages/" + invalidStageId+ "/retrospects")
-                .then().log().all()
-                .extract();
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-            final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
-            assertThat(error.getMessage()).isEqualTo(ErrorCode.NON_MATCH_STAGE.getMessage());
-        }
-    }
-
-    @Nested
     class updateState {
 
         @Test
@@ -322,11 +186,27 @@ public class StageTest extends AcceptanceTest {
             final UpdateStageRequest request = new UpdateStageRequest(State.PASS.toString());
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("stage/updateState",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                      parameterWithName("id").description("아이디")
+                    ),
+                    requestFields(
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
+                        fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .patch("/stages/" + stageId)
+                .patch("/stages/{id}", stageId)
                 .then().log().all()
                 .extract();
 
@@ -383,14 +263,5 @@ public class StageTest extends AcceptanceTest {
             final ErrorResponse error = RestAssuredUtils.extract(response, ErrorResponse.class);
             assertThat(error.getMessage()).isEqualTo("state 필드에 유효한 값을 입력해야 합니다.");
         }
-    }
-
-    private Long selectNotAttachedStageId() {
-        return stageRepository.findAll()
-            .stream()
-            .filter(stage -> !stage.hasAttachedRetrospect())
-            .map(Stage::getId)
-            .findAny()
-            .get();
     }
 }

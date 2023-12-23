@@ -1,7 +1,15 @@
 package com.project.undefined.acceptance.document;
 
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentRequest;
+import static com.project.undefined.acceptance.utils.ApiDocumentUtils.getDocumentResponse;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.restassured.RestAssuredRestDocumentation.document;
 
 import com.project.undefined.acceptance.AcceptanceTest;
 import com.project.undefined.acceptance.utils.DataUtils;
@@ -24,6 +32,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.restdocs.payload.JsonFieldType;
 
 @DisplayName("Document API 인수 테스트")
 public class DocumentTest extends AcceptanceTest {
@@ -46,11 +55,19 @@ public class DocumentTest extends AcceptanceTest {
             final CreateDocumentRequest request = new CreateDocumentRequest(jobId, "test");
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document/create",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    requestFields(
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용")
+                    )
+                ))
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -71,7 +88,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -93,7 +110,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -115,7 +132,7 @@ public class DocumentTest extends AcceptanceTest {
                 .when()
                 .body(request)
                 .contentType(ContentType.JSON)
-                .post("/documents/")
+                .post("/documents")
                 .then().log().all()
                 .extract();
 
@@ -136,9 +153,21 @@ public class DocumentTest extends AcceptanceTest {
             final Long documentId = DataUtils.findAnyId(documentRepository, Document::getId);
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("document/get",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("id").description("아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용")
+                    )
+                ))
                 .when()
-                .get("/documents/" + documentId)
+                .get("/documents/{id}", documentId)
                 .then().log().all()
                 .extract();
 
@@ -179,9 +208,21 @@ public class DocumentTest extends AcceptanceTest {
             final Long jobId = document.getJobId();
 
             // when
-            final ExtractableResponse<Response> response = given().log().all()
+            final ExtractableResponse<Response> response = given(spec).log().all()
+                .filter(document("company/getAll",
+                    getDocumentRequest(),
+                    getDocumentResponse(),
+                    pathParameters(
+                        parameterWithName("jobId").description("job 아이디")
+                    ),
+                    responseFields(
+                        fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
+                        fieldWithPath("content").type(JsonFieldType.STRING).description("내용")
+                    )
+                ))
                 .when()
-                .get("/documents/related/" + jobId)
+                .get("/documents/related/{jobId}", jobId)
                 .then().log().all()
                 .extract();
 
