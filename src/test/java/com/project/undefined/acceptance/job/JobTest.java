@@ -164,8 +164,7 @@ public class JobTest extends AcceptanceTest {
                         fieldWithPath("[]").type(JsonFieldType.ARRAY).description("job 리스트"),
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("아이디"),
                         fieldWithPath("[].companyId").type(JsonFieldType.NUMBER).description("company 아이디"),
-                        fieldWithPath("[].position").type(JsonFieldType.STRING).description("이름"),
-                        fieldWithPath("[].stageIds").type(JsonFieldType.ARRAY).description("stage 아이디 리스트")
+                        fieldWithPath("[].position").type(JsonFieldType.STRING).description("이름")
                     )
                 ))
                 .when()
@@ -203,8 +202,7 @@ public class JobTest extends AcceptanceTest {
                     responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
                         fieldWithPath("companyId").type(JsonFieldType.NUMBER).description("company 아이디"),
-                        fieldWithPath("position").type(JsonFieldType.STRING).description("포지션"),
-                        fieldWithPath("stageIds").type(JsonFieldType.ARRAY).description("stage 아이디 리스트")
+                        fieldWithPath("position").type(JsonFieldType.STRING).description("포지션")
                     )
                 ))
                 .when()
@@ -256,6 +254,7 @@ public class JobTest extends AcceptanceTest {
                     responseFields(
                         fieldWithPath("[]").type(JsonFieldType.ARRAY).description("stage 리스트"),
                         fieldWithPath("[].id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("[].jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
                         fieldWithPath("[].name").type(JsonFieldType.STRING).description("이름"),
                         fieldWithPath("[].state").type(JsonFieldType.STRING).description("상태")
                     )

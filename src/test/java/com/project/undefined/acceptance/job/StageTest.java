@@ -139,6 +139,7 @@ public class StageTest extends AcceptanceTest {
                     ),
                     responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
                         fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
                     )
@@ -197,6 +198,7 @@ public class StageTest extends AcceptanceTest {
                     ),
                     responseFields(
                         fieldWithPath("id").type(JsonFieldType.NUMBER).description("아이디"),
+                        fieldWithPath("jobId").type(JsonFieldType.NUMBER).description("job 아이디"),
                         fieldWithPath("name").type(JsonFieldType.STRING).description("이름"),
                         fieldWithPath("state").type(JsonFieldType.STRING).description("상태")
                     )
