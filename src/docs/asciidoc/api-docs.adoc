@@ -1,0 +1,38 @@
+= API Docs
+
+=== Company API
+.HTTP Request
+include::{snippets}/company/http-request.adoc[]
+.HTTP Response
+include::{snippets}/company/http-response.adoc[]
+
+=== Job API
+.HTTP Request
+include::{snippets}/job/http-request.adoc[]
+.HTTP Response
+include::{snippets}/job/http-response.adoc[]
+
+=== Stage API
+.HTTP Request
+include::{snippets}/stage/http-request.adoc[]
+.HTTP Response
+include::{snippets}/stage/http-response.adoc[]
+
+=== Document API
+.HTTP Request
+include::{snippets}/document/http-request.adoc[]
+.HTTP Response
+include::{snippets}/document/http-response.adoc[]
+
+=== Retrospect API
+.HTTP Request
+include::{snippets}/retrospect/http-request.adoc[]
+.HTTP Response
+include::{snippets}/retrospect/http-response.adoc[]
+
+
+
+
+
+
+
